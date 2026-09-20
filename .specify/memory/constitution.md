@@ -1,6 +1,6 @@
 <!--
 Sync Impact Report
-Version change: 1.0.0 -> 1.1.0
+Version change: 1.1.0 -> 1.1.0
 Modified principles:
 - I. Arquitectura De 3 Capas + Entities -> expanded dependency boundary rules
 - II. WPF + MVVM Sin Logica De Negocio En Vistas -> unchanged
@@ -12,7 +12,7 @@ Added sections:
 - Firebird data and encoding validation requirements
 - Minimum validation expectations by layer
 Removed sections:
-- Ninguna
+- SemVer governance policy
 Follow-up TODOs:
 - Ninguno
 -->
@@ -209,12 +209,11 @@ Cuando una feature proponga una excepcion, el plan DEBE documentar la razon, el
 riesgo, el alcance y el camino de retorno.
 
 Las enmiendas a esta constitucion DEBEN realizarse mediante el flujo de
-constitucion de Spec Kit. Cada enmienda DEBE actualizar version, fecha de ultima
-modificacion y reporte de impacto. La version sigue SemVer:
-
-- MAJOR: cambios incompatibles en principios o reglas de gobierno.
-- MINOR: nuevos principios, secciones o ampliaciones materiales.
-- PATCH: aclaraciones, correcciones o cambios editoriales sin impacto de reglas.
+constitucion de Spec Kit. La constitucion vigente es la fuente de verdad del
+proyecto. La version indicada al final del documento identifica la version
+actual aprobada; no se requiere politica SemVer para clasificar cambios. Cada
+enmienda DEBE actualizar la fecha de ultima modificacion y el reporte de impacto
+cuando aplique.
 
 Antes de cerrar una feature, se DEBE revisar cumplimiento contra esta
 constitucion durante plan, tasks o analyze. Si analyze detecta desviaciones, se
