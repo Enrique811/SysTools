@@ -1,6 +1,6 @@
 # Feature Specification: Base de shell modular de SysTools
 
-**Feature Branch**: `main`
+**Feature Branch**: `001-systools-shell-base`
 
 **Created**: 2026-09-20
 

@@ -86,9 +86,9 @@ Expected: Presentation → Business/Entities/Data (Data solo en composition root
 
 ## Recoverable error validation
 
-Usar un seam de prueba para simular fallo recuperable de activación; no agregar una opción oculta de producción.
+Usar un seam de prueba para simular un fallo recuperable durante la inicialización del módulo inicial; no agregar una opción oculta de producción.
 
-Expected: shell abierta, mensaje comprensible sin detalles internos y log Error con excepción/ModuleId.
+Expected: shell abierta con Verificador conservado o recuperado, mensaje comprensible sin detalles internos y log Error con excepción, `Stage=Initialization` y `ModuleId`.
 
 ## Scope guard
 

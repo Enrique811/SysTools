@@ -37,7 +37,7 @@ Superficie observable de la primera pantalla, comprobable desde UI y bindings; n
 | Product details | Descripción, Presentación, Existencia | Valores iniciales `—`. |
 | Final price | Etiqueta y valor destacado | `—`, nunca `$0` simulado. |
 | Shortcuts | Referencia opcional del mockup | No disponibles; teclas sin acción. |
-| Status area | Estado/mensaje | Severidad no dependiente solo del color. |
+| Status area | Zona inferior provista por ShellWindow debajo del módulo | PriceVerifierView no duplica la barra; la severidad no depende solo del color. |
 
 ## Global status contract
 
@@ -77,7 +77,7 @@ Los recursos usan claves semánticas; los estados siempre incluyen texto o etiqu
 | Failure | User-facing result | Diagnostic result |
 |---|---|---|
 | Sin módulo activo al iniciar | Recupera Verificador. | Warning estructurado. |
-| Error recuperable de activación | Shell abierta y mensaje amigable. | Error con excepción y ModuleId. |
+| Error recuperable durante la inicialización del módulo inicial | Shell abierta, conserva o recupera Verificador y muestra mensaje amigable. | Error con excepción, Stage=Initialization y ModuleId. |
 | Error fatal de arranque | Mensaje genérico previo al cierre cuando sea posible. | Fatal con excepción y flush. |
 
 Los mensajes visibles no incluyen stack traces, rutas, clases internas ni información sensible.

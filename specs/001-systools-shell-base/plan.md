@@ -18,13 +18,13 @@ La solución separará Presentation, Business, Data y Entities en proyectos inde
 
 **Storage**: Sin persistencia de negocio; únicamente logs rotativos en `%LOCALAPPDATA%/SysTools/Logs`
 
-**Testing**: xUnit con `dotnet test` para estado, comandos, ViewModels, registro de módulos y composición; quickstart manual para layout WPF, accesibilidad básica y comparación con el mockup
+**Testing**: xUnit con `dotnet test` en un proyecto Presentation.Tests para estado, comandos, ViewModels, registro de módulos y composición; quickstart manual para layout WPF, accesibilidad básica y comparación con el mockup
 
 **Target Platform**: Windows 10/11 x64 con .NET 10 Desktop Runtime; desarrollo con .NET 10 SDK y soporte de escritorio
 
 **Project Type**: Aplicación desktop WPF con cuatro proyectos de producción y proyectos de prueba separados
 
-**Performance Goals**: Shell lista para interacción en menos de 2 segundos en un equipo operativo de referencia; cambios de módulo sin trabajo bloqueante en el hilo de UI; diseño fluido desde 1280 × 720 hasta pantalla completa
+**Performance Goals**: Shell Release lista para interacción en menos de 2 segundos durante 10 arranques consecutivos en Windows 11 x64 con al menos 4 procesadores lógicos, 8 GB RAM y SSD; cambios de módulo sin trabajo bloqueante en el hilo de UI; diseño fluido desde 1280 × 720 hasta pantalla completa
 
 **Constraints**: Local y offline; una ventana principal; mínimo 1280 × 720; sin persistir preferencias; sin Firebird, licencias, configuración, búsqueda, códigos de barras, reportes o impresión; mensajes sin stack traces ni secretos
 
@@ -106,7 +106,6 @@ src/
 └── Reports/Templates/
 
 tests/
-├── SysTools.Business.Tests/SysTools.Business.Tests.csproj
 └── SysTools.Presentation.Tests/SysTools.Presentation.Tests.csproj
 ```
 
@@ -144,6 +143,7 @@ Entities ───────────────────────> 
 - Se usan Grid y tamaños relativos; no Canvas ni posicionamiento absoluto.
 - Los campos de código de barras e información adicional y los controles futuros usan `IsEnabled="False"` por binding; no reciben foco, no admiten escritura y no ejecutan acciones.
 - Conexión y licencia muestran `No disponible`; el mensaje inicial indica módulo en preparación.
+- `ShellWindow` es la única propietaria de la zona inferior de estado/mensajes y la presenta debajo del contenido activo; `PriceVerifierView` no duplica esa barra ni usa bindings cruzados hacia ShellViewModel.
 - Se mantienen contraste, tabulación, foco visible y nombres accesibles básicos.
 
 ## Logging and Failure Handling
