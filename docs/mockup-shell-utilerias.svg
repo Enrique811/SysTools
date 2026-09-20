@@ -1,0 +1,125 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900">
+  <defs>
+    <style>
+      .bg { fill: #f3f4f6; }
+      .panel { fill: #ffffff; stroke: #d7dde5; stroke-width: 1.2; }
+      .sidebar { fill: #111827; }
+      .sidebar-soft { fill: #1f2937; }
+      .accent { fill: #2563eb; }
+      .accent-soft { fill: #eff6ff; stroke: #bfdbfe; stroke-width: 1; }
+      .green-soft { fill: #dcfce7; stroke: #bbf7d0; stroke-width: 1; }
+      .red-soft { fill: #fee2e2; }
+      .text-dark { fill: #111827; font-family: Segoe UI, Arial, sans-serif; }
+      .text { fill: #374151; font-family: Segoe UI, Arial, sans-serif; }
+      .muted { fill: #6b7280; font-family: Segoe UI, Arial, sans-serif; }
+      .white { fill: #ffffff; font-family: Segoe UI, Arial, sans-serif; }
+      .side-muted { fill: #cbd5e1; font-family: Segoe UI, Arial, sans-serif; }
+      .title { font-size: 31px; font-weight: 700; }
+      .subtitle { font-size: 16px; }
+      .label { font-size: 17px; font-weight: 700; }
+      .body { font-size: 15px; }
+      .small { font-size: 13px; }
+      .price { font-size: 48px; font-weight: 700; fill: #2563eb; font-family: Segoe UI, Arial, sans-serif; }
+      .button-text { font-size: 15px; font-weight: 700; font-family: Segoe UI, Arial, sans-serif; }
+    </style>
+  </defs>
+
+  <rect class="bg" x="0" y="0" width="1600" height="900"/>
+
+  <!-- Sidebar shell -->
+  <rect class="sidebar" x="0" y="0" width="260" height="900"/>
+  <rect class="sidebar-soft" x="22" y="24" width="216" height="64" rx="14"/>
+  <circle cx="54" cy="56" r="18" fill="#60a5fa"/>
+  <text class="white" x="84" y="52" font-size="22" font-weight="700">SysUtilerias</text>
+  <text class="side-muted" x="84" y="72" font-size="12">Suite operativa</text>
+
+  <text class="side-muted" x="28" y="130" font-size="12" font-weight="700">UTILERIAS</text>
+  <rect class="accent" x="18" y="148" width="224" height="48" rx="12"/>
+  <text class="white" x="54" y="178" font-size="15" font-weight="700">Verificador de precios</text>
+  <circle cx="34" cy="172" r="7" fill="#ffffff"/>
+
+  <rect x="18" y="206" width="224" height="48" rx="12" fill="transparent"/>
+  <text class="side-muted" x="54" y="236" font-size="15">Impresion de etiquetas</text>
+  <circle cx="34" cy="230" r="7" fill="#94a3b8"/>
+
+  <rect x="18" y="264" width="224" height="48" rx="12" fill="transparent"/>
+  <text class="side-muted" x="54" y="294" font-size="15">Inventario rapido</text>
+  <circle cx="34" cy="288" r="7" fill="#94a3b8"/>
+
+  <rect x="18" y="322" width="224" height="48" rx="12" fill="transparent"/>
+  <text class="side-muted" x="54" y="352" font-size="15">Nueva utileria</text>
+  <circle cx="34" cy="346" r="7" fill="#94a3b8"/>
+
+  <text class="side-muted" x="28" y="420" font-size="12" font-weight="700">ADMINISTRACION</text>
+  <text class="side-muted" x="54" y="468" font-size="15">Configuracion</text>
+  <circle cx="34" cy="462" r="7" fill="#94a3b8"/>
+  <text class="side-muted" x="54" y="526" font-size="15">Licencias</text>
+  <circle cx="34" cy="520" r="7" fill="#94a3b8"/>
+  <text class="side-muted" x="54" y="584" font-size="15">Logs del sistema</text>
+  <circle cx="34" cy="578" r="7" fill="#94a3b8"/>
+
+  <rect class="sidebar-soft" x="22" y="788" width="216" height="82" rx="14"/>
+  <text class="side-muted" x="42" y="820" font-size="13">Conexion</text>
+  <text class="white" x="42" y="844" font-size="16" font-weight="700">Firebird local</text>
+  <circle cx="210" cy="834" r="8" fill="#22c55e"/>
+
+  <!-- Top bar -->
+  <rect class="panel" x="284" y="24" width="1292" height="76" rx="18"/>
+  <text class="text-dark title" x="318" y="70">Verificador de precios</text>
+  <text class="muted subtitle" x="670" y="70">Modulo activo dentro de SysUtilerias</text>
+  <rect class="green-soft" x="1308" y="42" width="118" height="40" rx="10"/>
+  <text class="text" x="1330" y="67" font-size="14" font-weight="700">Licencia OK</text>
+  <rect class="accent-soft" x="1440" y="42" width="112" height="40" rx="10"/>
+  <text class="text" x="1465" y="67" font-size="14" font-weight="700">Ajustes</text>
+
+  <!-- Module header -->
+  <rect class="panel" x="284" y="122" width="1292" height="116" rx="18"/>
+  <circle cx="336" cy="180" r="28" fill="#eff6ff" stroke="#bfdbfe"/>
+  <text class="accent" x="324" y="190" font-size="30" font-family="Segoe UI, Arial" font-weight="700">$</text>
+  <text class="text-dark title" x="384" y="170">Verificador de precios</text>
+  <text class="muted subtitle" x="386" y="200">Consulta rapida, busqueda de productos e impresion de etiquetas</text>
+
+  <rect class="accent-soft" x="1114" y="158" width="144" height="44" rx="10"/>
+  <text class="text button-text" x="1142" y="185">Buscar</text>
+  <rect class="accent-soft" x="1272" y="158" width="144" height="44" rx="10"/>
+  <text class="text button-text" x="1298" y="185">Imprimir</text>
+  <rect class="accent-soft" x="1430" y="158" width="112" height="44" rx="10"/>
+  <text class="text button-text" x="1456" y="185">Config</text>
+
+  <!-- Main content -->
+  <rect class="panel" x="284" y="262" width="890" height="220" rx="18"/>
+  <text class="text-dark label" x="316" y="306">Codigo de barras</text>
+  <rect x="316" y="322" width="826" height="56" rx="10" fill="#ffffff" stroke="#d7dde5"/>
+  <text class="muted body" x="338" y="357">Escanea o escribe el codigo y presiona Enter</text>
+  <text class="text-dark label" x="316" y="414">Informacion adicional</text>
+  <rect x="316" y="430" width="826" height="36" rx="10" fill="#ffffff" stroke="#d7dde5"/>
+
+  <rect class="panel" x="284" y="506" width="890" height="270" rx="18"/>
+  <text class="text-dark label" x="316" y="550">Descripcion</text>
+  <text class="muted body" x="316" y="582">-</text>
+  <text class="text-dark label" x="316" y="640">Presentacion</text>
+  <text class="muted body" x="316" y="672">-</text>
+  <text class="text-dark label" x="316" y="730">Existencia</text>
+  <text class="muted body" x="316" y="762">-</text>
+
+  <!-- Right panel -->
+  <rect class="panel" x="1196" y="262" width="380" height="514" rx="18"/>
+  <text class="text-dark label" x="1230" y="306">Precio final</text>
+  <text class="price" x="1230" y="374">$ 0</text>
+  <text class="text-dark label" x="1230" y="438">Accesos rapidos</text>
+  <text class="text body" x="1230" y="468">Enter: Consultar producto</text>
+  <text class="text body" x="1230" y="494">Ctrl + F7: Buscar productos</text>
+  <text class="text body" x="1230" y="520">Ctrl + F8: Imprimir etiqueta</text>
+  <text class="text body" x="1230" y="546">Ctrl + F9: Configuracion</text>
+  <text class="text body" x="1230" y="572">Ctrl + F10: Cancelar lista</text>
+  <line x1="1230" y1="632" x2="1542" y2="632" stroke="#e5e7eb"/>
+  <text class="muted small" x="1230" y="686">Modulo: Verificador</text>
+  <text class="muted small" x="1230" y="712">Version: 1.0.0</text>
+  <text class="muted small" x="1230" y="738">Ultima actualizacion: 2026-09-20</text>
+
+  <!-- Status bar -->
+  <rect class="panel" x="284" y="800" width="1292" height="76" rx="18"/>
+  <rect class="red-soft" x="316" y="824" width="580" height="30" rx="6"/>
+  <text fill="#b91c1c" x="334" y="845" font-size="14" font-family="Segoe UI, Arial">Licencia invalida. Acceda a Configuracion para actualizarla.</text>
+  <text class="muted body" x="930" y="844">El menu lateral permite agregar nuevas utilerias sin cambiar este modulo.</text>
+</svg>

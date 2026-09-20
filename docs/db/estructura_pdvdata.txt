@@ -1,0 +1,1802 @@
+Database:  C:\Program Files (x86)\AbarrotesMultiCaja\db\pdvdata.fdb, User: SYSDBA
+SQL> SQL> SQL> SQL> Database: C:\Program Files (x86)\AbarrotesMultiCaja\db\pdvdata.fdb
+        Owner: SYSDBA                         
+PAGE_SIZE 16384 
+Number of DB pages allocated = 571
+Sweep interval = 20000
+Forced Writes are ON 
+Transaction - oldest = 70247 
+Transaction - oldest active = 70248 
+Transaction - oldest snapshot = 70248 
+Transaction - Next = 70251 
+ODS = 11.0
+Default Character set: NONE                           
+SQL> SQL>        ABONOS                                 ABONOS_ARTICULOS               
+       ABONOS_VENTAS                          ABONO_TICKETS                  
+       ALMACENES                              ARTICULOS_DE_OC                
+       ARTICULO_COMPONENTES                   CACHE                          
+       CAJAS                                  CLIENTES                       
+       CLIENTESV2                             CLIENTESV2_CREDITO             
+       CLIENTESV2_FACTURACION                 CLIENTESV2_TAGS                
+       COMISIONES_TARJETA                     CONCILIACION_PAGO_SERVICIOS    
+       CONFIGURACION                          CORTE_IMPUESTOS_COBRADOS       
+       CORTE_IMP_COBRADOS_OPERACION           CORTE_MOVIMIENTOS              
+       CORTE_OPERACIONES                      CORTE_VENTAS_DEPTO_OPERACIONES 
+       CORTE_VENTAS_POR_DEPTO                 CREDITOS_ABONOS                
+       CREDITOS_ABONOS_ARTICULOS              CREDITOS_ABONOS_IMPUESTOS      
+       CREDITOS_ABONOS_PAGOS                  CREDITOS_ABONOS_VENTAS         
+       CREDITOS_ARTICULOS_IMPUESTOS           CREDITOS_TRANSACCIONES         
+       DEPARTAMENTOS                          DEVOLUCIONES                   
+       DEVOLUCIONES_ARTICULOS                 FACTURACION_CERTIFICADOS       
+       FACTURACION_CLIENTES                   FACTURACION_EMISORES           
+       FACTURACION_FOLIOS                     FACTURAS                       
+       FACTURAS_ABONOS                        HISTORIAL_INVENTARIO           
+       IMPUESTOS                              IMPUESTOS_REGLAS               
+       INVENTARIO_AJUSTES                     INVENTARIO_APARTADO            
+       INVENTARIO_BALANCES                    INVENTARIO_HISTORIAL           
+       INVENTARIO_RECIBOS                     INVENTARIO_RECIBOS_DETALLE     
+       LISTA_DE_COMPRA                        MEDIDAS                        
+       MOVIMIENTOS                            OPERACIONES                    
+       ORDENES_DE_COMPRA                      PAGOS_MIXTOS                   
+       PRODUCTOS                              PRODUCTOS_BASE                 
+       PRODUCTOS_CFDI                         PRODUCTOS_UDF_RECARGAS         
+       PRODUCTOS_UDF_SERVICIOS                PRODUCTO_COMPONENTES           
+       PROMOCIONES_POR_CANTIDAD               PROVEEDORES                    
+       PROVEEDORES_BASE                       REPORTE_ABONO_SERVICIOS        
+       SCHEMA_DATA_INFO                       SCHEMA_INFO                    
+       SINCRONIZACION_NUBE                    SINCRONIZACION_VENTAS          
+       TRANSACCIONES_PROSEPAGO                TURNOS                         
+       USUARIOS                               VENTATICKETS                   
+       VENTATICKETS_ARTICULOS                 VENTATICKETS_ARTICULOS_BORRADOS
+       VENTATICKETS_IMPUESTOS                 VENTA_DE_RECARGAS              
+       VENTA_RECARGA                          VENTA_SERVICIO                 
+
+SQL> SQL> Tables:
+       RDB$BACKUP_HISTORY                     RDB$CHARACTER_SETS             
+       RDB$CHECK_CONSTRAINTS                  RDB$COLLATIONS                 
+       RDB$DATABASE                           RDB$DEPENDENCIES               
+       RDB$EXCEPTIONS                         RDB$FIELDS                     
+       RDB$FIELD_DIMENSIONS                   RDB$FILES                      
+       RDB$FILTERS                            RDB$FORMATS                    
+       RDB$FUNCTIONS                          RDB$FUNCTION_ARGUMENTS         
+       RDB$GENERATORS                         RDB$INDEX_SEGMENTS             
+       RDB$INDICES                            RDB$LOG_FILES                  
+       RDB$PAGES                              RDB$PROCEDURES                 
+       RDB$PROCEDURE_PARAMETERS               RDB$REF_CONSTRAINTS            
+       RDB$RELATIONS                          RDB$RELATION_CONSTRAINTS       
+       RDB$RELATION_FIELDS                    RDB$ROLES                      
+       RDB$SECURITY_CLASSES                   RDB$TRANSACTIONS               
+       RDB$TRIGGERS                           RDB$TRIGGER_MESSAGES           
+       RDB$TYPES                              RDB$USER_PRIVILEGES            
+       RDB$VIEW_RELATIONS              
+Functions:
+       RDB$GET_CONTEXT                        RDB$SET_CONTEXT                
+
+SQL> SQL> 
+
+
+================================================================================
+TABLA: ABONOS
+================================================================================
+
+Database:  C:\Program Files (x86)\AbarrotesMultiCaja\db\pdvdata.fdb, User: SYSDBA
+SQL> SQL> ID                              (TLLAVE) INTEGER Not Null 
+CLIENTE_ID                      (TLLAVE) INTEGER Nullable 
+DTFECHA                         (TFECHAHORA) TIMESTAMP Nullable 
+DMONTO                          (TMONEDA) BIGINT Nullable 
+BCONTAR                         (TBOOLEANO) CHAR(1) Nullable 
+GANANCIA                        (TMONEDA) BIGINT Not Null DEFAULT 0
+ID_TURNO                        (TLLAVE) INTEGER Nullable 
+FORMA_DE_PAGO                   (TFORMAPAGO) CHAR(10) Nullable 
+DEVUELTO_EN                     (TFECHAHORA) TIMESTAMP Nullable 
+ID_CAJA                         (TLLAVE) INTEGER Nullable 
+FACTURA_ID                      (TLLAVE) INTEGER Nullable 
+IMPUESTOS_COBRADOS              (TCADENALARGA) VARCHAR(255) Not Null DEFAULT 0
+PAGADO_EN                       (TFECHAHORA) TIMESTAMP Nullable 
+CLIENTESV2_CREDITO_ID           INTEGER Nullable 
+CONSTRAINT PK_ABONOS:
+  Primary key (ID)
+
+Triggers on Table ABONOS:
+ABONOS_BI, Sequence: 0, Type: BEFORE INSERT, Active
+SQL> 
+
+================================================================================
+TABLA: ABONOS_ARTICULOS
+================================================================================
+
+Database:  C:\Program Files (x86)\AbarrotesMultiCaja\db\pdvdata.fdb, User: SYSDBA
+SQL> SQL> ID                              (TLLAVE) INTEGER Not Null 
+ABONO_ID                        (TLLAVE) INTEGER Not Null 
+ARTICULO_ID                     (TLLAVE) INTEGER Not Null 
+PORCENTAJE_PAGADO               (TMONEDA_4_DECIMALES) INTEGER Nullable 
+CONSTRAINT PK_ABONOS_ARTICULOS:
+  Primary key (ID)
+
+Triggers on Table ABONOS_ARTICULOS:
+ABONOS_ARTICULOS_BI, Sequence: 0, Type: BEFORE INSERT, Active
+SQL> 
+
+================================================================================
+TABLA: ABONOS_VENTAS
+================================================================================
+
+Database:  C:\Program Files (x86)\AbarrotesMultiCaja\db\pdvdata.fdb, User: SYSDBA
+SQL> SQL> ID                              (TLLAVE) INTEGER Not Null 
+ABONO_ID                        (TLLAVE) INTEGER Not Null 
+TICKET_ID                       (TLLAVE) INTEGER Not Null 
+MONTO_ABONADO                   (TMONEDA) BIGINT Not Null 
+CONSECUTIVO                     (TSMALLINT) SMALLINT Nullable 
+SALDO_ANTERIOR                  (TMONEDA) BIGINT Nullable 
+SALDO_POSTERIOR                 (TMONEDA) BIGINT Nullable 
+CANCELADO_EN                    (TFECHAHORA) TIMESTAMP Nullable 
+CONSTRAINT ABONOS_VENTAS_PK:
+  Primary key (ID)
+
+Triggers on Table ABONOS_VENTAS:
+ABONOS_VENTAS_BI, Sequence: 0, Type: BEFORE INSERT, Active
+SQL> 
+
+================================================================================
+TABLA: ABONO_TICKETS
+================================================================================
+
+Database:  C:\Program Files (x86)\AbarrotesMultiCaja\db\pdvdata.fdb, User: SYSDBA
+SQL> SQL> ID                              (TLLAVE) INTEGER Not Null 
+ABONO_ID                        (TLLAVE) INTEGER Not Null 
+TICKET_ID                       (TLLAVE) INTEGER Not Null 
+ARTICULO_ID                     (TLLAVE) INTEGER Not Null DEFAULT 0
+PORCENTAJE_PAGADO               (TMONEDA) BIGINT Not Null DEFAULT 0
+ABONO_GANANCIA                  (TMONEDA) BIGINT Not Null DEFAULT 0
+ABONO_GANANCIA_DEPTO_ID         (TLLAVE) INTEGER Not Null DEFAULT 0
+ABONO_IMPORTE                   (TMONEDA) BIGINT Not Null DEFAULT 0
+ABONO_IMPUESTOS_TOTAL           (TMONEDA) BIGINT Not Null DEFAULT 0
+CONSTRAINT PK_ABONO_TICKETS:
+  Primary key (ID)
+
+Triggers on Table ABONO_TICKETS:
+ABONO_TICKETS_BI, Sequence: 0, Type: BEFORE INSERT, Active
+SQL> 
+
+================================================================================
+TABLA: ALMACENES
+================================================================================
+
+Database:  C:\Program Files (x86)\AbarrotesMultiCaja\db\pdvdata.fdb, User: SYSDBA
+SQL> SQL> ID                              (TLLAVE) INTEGER Not Null 
+NOMBRE                          (TCADENALARGA) VARCHAR(255) Nullable 
+CONSTRAINT PK_ALMACENES:
+  Primary key (ID)
+
+Triggers on Table ALMACENES:
+ALMACENES_BI, Sequence: 0, Type: BEFORE INSERT, Active
+SQL> 
+
+================================================================================
+TABLA: ARTICULOS_DE_OC
+================================================================================
+
+Database:  C:\Program Files (x86)\AbarrotesMultiCaja\db\pdvdata.fdb, User: SYSDBA
+SQL> SQL> ID                              (TLLAVE) INTEGER Not Null 
+ID_ORDEN_DE_COMPRA              (TLLAVE) INTEGER Nullable 
+ID_PRODUCTO                     (TLLAVE) INTEGER Nullable 
+CODIGO_PRODUCTO                 (TCODIGOPRODUCTO) VARCHAR(20) Nullable 
+DESCRIPCION_PRODUCTO            (TPRODUCTODESCRIPCION) VARCHAR(255) Nullable 
+DEPARTAMENTO_PRODUCTO           (TCADENAMEDIANA) VARCHAR(50) Nullable 
+CANTIDAD_ORDENADA               (TCANTIDADINV) DOUBLE PRECISION Nullable 
+CANTIDAD_RECIBIDA               (TCANTIDADINV) DOUBLE PRECISION Nullable 
+ID_AGRUPACION                   (TFECHAHORA) TIMESTAMP Nullable 
+COSTO_AL_ORDENAR                (TMONEDA) BIGINT Nullable 
+COSTO_AL_RECIBIR                (TMONEDA) BIGINT Nullable 
+DIAS_EN_SURTIR                  (TCANTIDAD) FLOAT Nullable 
+LISTA_IMPUESTOS                 (TCADENALARGA) VARCHAR(255) Nullable 
+UTILIDAD_ESTIMADA_AL_ORDENAR    (TMONEDA) BIGINT Nullable 
+UTILIDAD_ESTIMADA_AL_RECIBIR    (TMONEDA) BIGINT Nullable 
+IMPUESTOS_AL_RECIBIR            (TMONEDA) BIGINT Nullable 
+SUBTOTAL_AL_RECIBIR             (TMONEDA) BIGINT Nullable 
+TOTAL_AL_ORDENAR                (TMONEDA) BIGINT Nullable 
+TOTAL_AL_RECIBIR                (TMONEDA) BIGINT Nullable 
+PRECIO_SIN_IMPUESTOS            (TMONEDA) BIGINT Nullable 
+PRECIO_CON_IMPUESTOS            (TMONEDA) BIGINT Nullable 
+PRECIO_MAYOREO_CON_IMPUESTOS    (TMONEDA) BIGINT Nullable 
+CONSTRAINT PK_ARTICULOS_DE_OC:
+  Primary key (ID)
+
+Triggers on Table ARTICULOS_DE_OC:
+ARTICULOS_DE_OC_BI, Sequence: 0, Type: BEFORE INSERT, Active
+SQL> 
+
+================================================================================
+TABLA: ARTICULO_COMPONENTES
+================================================================================
+
+Database:  C:\Program Files (x86)\AbarrotesMultiCaja\db\pdvdata.fdb, User: SYSDBA
+SQL> SQL> ARTICULO_ID                     (TLLAVE) INTEGER Not Null 
+PRODUCTO_PADRE_ID               (TLLAVE) INTEGER Not Null 
+PRODUCTO_HIJO_ID                (TLLAVE) INTEGER Not Null 
+CANTIDAD                        (TCANTIDAD) FLOAT Not Null 
+CONSTRAINT UNQ_ART_COMP_PADRE_HIJO:
+  Unique key (ARTICULO_ID, PRODUCTO_PADRE_ID, PRODUCTO_HIJO_ID)
+SQL> 
+
+================================================================================
+TABLA: CACHE
+================================================================================
+
+Database:  C:\Program Files (x86)\AbarrotesMultiCaja\db\pdvdata.fdb, User: SYSDBA
+SQL> SQL> ID                              (TLLAVE) INTEGER Not Null 
+PARAMETRO                       (TCADENAMEDIANA) VARCHAR(50) Nullable 
+VALOR                           (TNOTA) BLOB segment 80, subtype BINARY Nullable 
+TTL                             (TFECHAHORA) TIMESTAMP Nullable 
+ETAG                            (TCADENAMEDIANA) VARCHAR(50) Nullable DEFAULT NULL
+CONSTRAINT PK_CACHE:
+  Primary key (ID)
+
+Triggers on Table CACHE:
+CACHE_BI, Sequence: 0, Type: BEFORE INSERT, Active
+SQL> 
+
+================================================================================
+TABLA: CAJAS
+================================================================================
+
+Database:  C:\Program Files (x86)\AbarrotesMultiCaja\db\pdvdata.fdb, User: SYSDBA
+SQL> SQL> ID                              (TLLAVE) INTEGER Not Null 
+NOMBRE                          (TCADENAMEDIANA) VARCHAR(50) Nullable 
+ULTIMA_IP                       (TCADENAMEDIANA) VARCHAR(50) Not Null 
+ULTIMO_INGRESO                  (TFECHAHORA) TIMESTAMP Nullable 
+NOMBRE_PC                       (TNOMBREPC) VARCHAR(150) Nullable 
+ELIMINADA_EN                    (TFECHAHORA) TIMESTAMP Nullable 
+ES_PRINCIPAL                    (TBOOLEANO) CHAR(1) Nullable DEFAULT 'F'
+TERMINAL_ID                     VARCHAR(40) Nullable 
+CONSTRAINT PK_CAJAS:
+  Primary key (ID)
+CONSTRAINT UNQ1_CAJAS:
+  Unique key (NOMBRE, ELIMINADA_EN)
+CONSTRAINT UNQ1_CAJA_SID:
+  Unique key (NOMBRE_PC, ELIMINADA_EN)
+
+Triggers on Table CAJAS:
+CAJAS_BI, Sequence: 0, Type: BEFORE INSERT, Active
+SQL> 
+
+================================================================================
+TABLA: CLIENTES
+================================================================================
+
+Database:  C:\Program Files (x86)\AbarrotesMultiCaja\db\pdvdata.fdb, User: SYSDBA
+SQL> SQL> NUMERO                          (TLLAVE) INTEGER Not Null 
+DIRECCION                       (TCADENALARGA) VARCHAR(255) Nullable 
+TELEFONO                        (TCADENAMEDIANA) VARCHAR(50) Nullable 
+DSALDOACTUAL                    (TMONEDA) BIGINT Nullable 
+DTACTUALIZASALDO                (TFECHA) DATE Nullable 
+LIMITE_CREDITO                  (TMONEDA) BIGINT Nullable 
+ULTIMO_PAGO_EN                  (TFECHAHORA) TIMESTAMP Nullable 
+FOLIO                           (TFOLIO) INTEGER Not Null 
+NOMBRE                          (TCADENALARGA) VARCHAR(255) Nullable DEFAULT NULL
+CONSTRAINT PK_CLIENTES:
+  Primary key (NUMERO)
+
+Triggers on Table CLIENTES:
+CLIENTES_BI, Sequence: 0, Type: BEFORE INSERT, Active
+SQL> 
+
+================================================================================
+TABLA: CLIENTESV2
+================================================================================
+
+Database:  C:\Program Files (x86)\AbarrotesMultiCaja\db\pdvdata.fdb, User: SYSDBA
+SQL> SQL> ID                              INTEGER Not Null 
+FOLIO                           INTEGER Nullable 
+NOMBRES                         (TCADENALARGA) VARCHAR(255) Not Null 
+APELLIDOS                       (TCADENALARGA) VARCHAR(255) Nullable 
+EMAIL                           (TCADENALARGA) VARCHAR(255) Nullable 
+TELEFONO                        VARCHAR(50) Nullable 
+DOMICILIO1                      (TCADENALARGA) VARCHAR(255) Nullable 
+DOMICILIO2                      (TCADENALARGA) VARCHAR(255) Nullable 
+COLONIA                         (TCADENALARGA) VARCHAR(255) Nullable 
+MUNICIPIO                       (TCADENALARGA) VARCHAR(255) Nullable 
+ESTADO                          (TCADENALARGA) VARCHAR(255) Nullable 
+PAIS                            (TCADENALARGA) VARCHAR(255) Nullable 
+CODIGO_POSTAL                   VARCHAR(20) Nullable 
+NOTAS                           VARCHAR(1000) Nullable 
+TOTAL_VENTAS                    NUMERIC(10, 4) Nullable DEFAULT 0
+TOTAL_GANANCIAS                 NUMERIC(10, 4) Nullable DEFAULT 0
+TOTAL_TICKETS                   INTEGER Nullable DEFAULT 0
+ACTIVO                          SMALLINT Nullable DEFAULT 1
+DE_SISTEMA                      SMALLINT Nullable 
+OLD_CLIENTE_ID                  (TLLAVE) INTEGER Nullable 
+OLD_FACTURACION_CLIENTES_ID     (TLLAVE) INTEGER Nullable 
+CONSTRAINT CLIENTESV2_PK:
+  Primary key (ID)
+
+Triggers on Table CLIENTESV2:
+CLIENTESV2_BI, Sequence: 0, Type: BEFORE INSERT, Active
+SQL> 
+
+================================================================================
+TABLA: CLIENTESV2_CREDITO
+================================================================================
+
+Database:  C:\Program Files (x86)\AbarrotesMultiCaja\db\pdvdata.fdb, User: SYSDBA
+SQL> SQL> CLIENTESV2_ID                   (TLLAVE) INTEGER Not Null 
+TIENE_CREDITO                   SMALLINT Nullable DEFAULT 0
+LIMITE_CREDITO                  NUMERIC(10, 4) Nullable DEFAULT 0
+ULTIMO_ABONO                    TIMESTAMP Nullable 
+SALDO_ACTUAL                    NUMERIC(10, 4) Nullable DEFAULT 0
+ELIMINADO_EN                    (TFECHAHORA) TIMESTAMP Nullable 
+CONSTRAINT PK_CLIENTESV2_CREDITO_ID:
+  Primary key (CLIENTESV2_ID)
+SQL> 
+
+================================================================================
+TABLA: CLIENTESV2_FACTURACION
+================================================================================
+
+Database:  C:\Program Files (x86)\AbarrotesMultiCaja\db\pdvdata.fdb, User: SYSDBA
+SQL> SQL> CLIENTESV2_ID                   (TLLAVE) INTEGER Not Null 
+RFC                             (TRFC) VARCHAR(13) Not Null 
+NOMBRE                          (TCADENALARGA) VARCHAR(255) Nullable 
+CALLE                           (TCADENALARGA) VARCHAR(255) Nullable 
+NOEXTERIOR                      (TCADENAMEDIANA) VARCHAR(50) Nullable 
+NOINTERIOR                      (TCADENAMEDIANA) VARCHAR(50) Nullable 
+COLONIA                         (TCADENALARGA) VARCHAR(255) Nullable 
+LOCALIDAD                       (TCADENALARGA) VARCHAR(255) Nullable 
+MUNICIPIO                       (TCADENALARGA) VARCHAR(255) Nullable 
+ESTADO                          (TCADENAMEDIANA) VARCHAR(50) Nullable 
+PAIS                            (TCADENALARGA) VARCHAR(255) Nullable 
+EMAIL                           (TCADENALARGA) VARCHAR(255) Nullable 
+REFERENCIA                      (TCADENALARGA) VARCHAR(255) Nullable 
+CODIGOPOSTAL                    (TCODIGOPOSTAL) INTEGER Nullable 
+REGIMENES                       (TNOTA) BLOB segment 80, subtype BINARY Nullable 
+ELIMINADO_EN                    (TFECHAHORA) TIMESTAMP Nullable 
+REGIMEN_FISCAL                  (TCADENAMEDIANA) VARCHAR(50) Nullable 
+CONSTRAINT PK_CLIENTESV2_FACTURACION_ID:
+  Primary key (CLIENTESV2_ID)
+SQL> 
+
+================================================================================
+TABLA: CLIENTESV2_TAGS
+================================================================================
+
+Database:  C:\Program Files (x86)\AbarrotesMultiCaja\db\pdvdata.fdb, User: SYSDBA
+SQL> SQL> CLIENTESV2_ID                   INTEGER Not Null 
+TAG                             (TCADENAMEDIANA) VARCHAR(50) Not Null 
+SQL> 
+
+================================================================================
+TABLA: COMISIONES_TARJETA
+================================================================================
+
+Database:  C:\Program Files (x86)\AbarrotesMultiCaja\db\pdvdata.fdb, User: SYSDBA
+SQL> SQL> ID                              (TLLAVE) INTEGER Not Null 
+TICKET_ID                       (TLLAVE) INTEGER Nullable 
+ABONO_ID                        (TLLAVE) INTEGER Nullable 
+TOTAL_COBRADO                   (TMONEDA) BIGINT Not Null 
+BASE_COMISION                   (TMONEDA) BIGINT Not Null 
+PORCENTAJE_COMISION             (TPORCENTAJE) SMALLINT Not Null DEFAULT 0
+MONTO_COMISION                  (TMONEDA) BIGINT Not Null 
+CONSTRAINT PK_COMISIONES_TARJETA:
+  Primary key (ID)
+
+Triggers on Table COMISIONES_TARJETA:
+COMISIONES_TARJETA_BI, Sequence: 0, Type: BEFORE INSERT, Active
+SQL> 
+
+================================================================================
+TABLA: CONCILIACION_PAGO_SERVICIOS
+================================================================================
+
+Database:  C:\Program Files (x86)\AbarrotesMultiCaja\db\pdvdata.fdb, User: SYSDBA
+SQL> SQL> ID                              (TLLAVE) INTEGER Not Null 
+NOMBRE_ARCHIVO                  (TCADENAMEDIANA) VARCHAR(50) Nullable 
+SUBIDO_EN                       (TFECHAHORA) TIMESTAMP Nullable 
+PROCESADO_EN                    (TFECHAHORA) TIMESTAMP Nullable 
+CONTENIDO                       (TARCHIVO) BLOB segment 80, subtype BINARY Nullable 
+CONSTRAINT PK_CONCILIACION_PAGO_SERVICIOS:
+  Primary key (ID)
+
+Triggers on Table CONCILIACION_PAGO_SERVICIOS:
+CONCILIACION_PA_BI, Sequence: 0, Type: BEFORE INSERT, Active
+SQL> 
+
+================================================================================
+TABLA: CONFIGURACION
+================================================================================
+
+Database:  C:\Program Files (x86)\AbarrotesMultiCaja\db\pdvdata.fdb, User: SYSDBA
+SQL> SQL> ID                              (TLLAVE) INTEGER Not Null 
+PARAMETRO                       (TCADENALARGA) VARCHAR(255) Nullable 
+CAJA_ID                         (TLLAVE) INTEGER Nullable 
+VALOR                           BLOB segment 80, subtype BINARY Nullable DEFAULT NULL
+CONSTRAINT PK_CONFIGURACION:
+  Primary key (ID)
+
+Triggers on Table CONFIGURACION:
+CONFIGURACION_BI, Sequence: 0, Type: BEFORE INSERT, Active
+SQL> 
+
+================================================================================
+TABLA: CORTE_IMPUESTOS_COBRADOS
+================================================================================
+
+Database:  C:\Program Files (x86)\AbarrotesMultiCaja\db\pdvdata.fdb, User: SYSDBA
+SQL> SQL> ID                              (TLLAVE) INTEGER Not Null 
+ID_IMPUESTO                     (TLLAVE) INTEGER Not Null 
+ACUMULADO_IMPUESTOS             (TCURRENCY) NUMERIC(18, 4) Nullable DEFAULT 0
+ACUMULADO_VENTAS_GRAVADAS       (TCURRENCY) NUMERIC(18, 4) Nullable DEFAULT 0
+ID_TURNO                        (TLLAVE) INTEGER Not Null 
+ACUMULADO_IMPUESTOS_NO_DESG     (TCURRENCY) NUMERIC(18, 4) Nullable DEFAULT 0
+CONSTRAINT PK_CORTE_IMPUESTOS_COBRADOS:
+  Primary key (ID)
+
+Triggers on Table CORTE_IMPUESTOS_COBRADOS:
+CORTE_IMPUESTOS_BI, Sequence: 0, Type: BEFORE INSERT, Active
+SQL> 
+
+================================================================================
+TABLA: CORTE_IMP_COBRADOS_OPERACION
+================================================================================
+
+Database:  C:\Program Files (x86)\AbarrotesMultiCaja\db\pdvdata.fdb, User: SYSDBA
+SQL> SQL> ID                              (TLLAVE) INTEGER Not Null 
+ID_IMPUESTO                     (TLLAVE) INTEGER Nullable 
+ACUMULADO_IMPUESTOS             (TCURRENCY) NUMERIC(18, 4) Nullable DEFAULT 0
+ACUMULADO_VENTAS_GRAVADAS       (TCURRENCY) NUMERIC(18, 4) Nullable DEFAULT 0
+ID_OPERACION                    (TLLAVE) INTEGER Not Null 
+ACUMULADO_IMPUESTOS_NO_DESG     (TCURRENCY) NUMERIC(18, 4) Nullable DEFAULT 0
+CONSTRAINT PK_CORTE_IMP_COBRADOS_OPERACION:
+  Primary key (ID)
+
+Triggers on Table CORTE_IMP_COBRADOS_OPERACION:
+CORTE_IMP_COBRA_BI, Sequence: 0, Type: BEFORE INSERT, Active
+SQL> 
+
+================================================================================
+TABLA: CORTE_MOVIMIENTOS
+================================================================================
+
+Database:  C:\Program Files (x86)\AbarrotesMultiCaja\db\pdvdata.fdb, User: SYSDBA
+SQL> SQL> ID                              (TLLAVE) INTEGER Not Null 
+BORRADO_EL                      (TFECHAHORA) TIMESTAMP Nullable 
+CUANDO_FUE                      (TFECHAHORA) TIMESTAMP Nullable 
+MONTO                           (TCURRENCY) NUMERIC(18, 4) Not Null DEFAULT 0
+DESCRIPCION                     (TCADENALARGA) VARCHAR(255) Not Null 
+TIPO                            (TCADENAMEDIANA) VARCHAR(50) Nullable 
+ID_TURNO                        (TLLAVE) INTEGER Nullable 
+FORMA_PAGO                      (TENUMERADO) CHAR(1) Nullable 
+RAZON_DEVOLUCION                (TENUMERADO) CHAR(1) Nullable 
+ID_CAJA                         (TLLAVE) INTEGER Nullable 
+CONSTRAINT PK_CORTE_MOVIMIENTOS:
+  Primary key (ID)
+
+Triggers on Table CORTE_MOVIMIENTOS:
+CORTE_MOVIMIENTOS_BI, Sequence: 0, Type: BEFORE INSERT, Active
+SQL> 
+
+================================================================================
+TABLA: CORTE_OPERACIONES
+================================================================================
+
+Database:  C:\Program Files (x86)\AbarrotesMultiCaja\db\pdvdata.fdb, User: SYSDBA
+SQL> SQL> ID                              (TLLAVE) INTEGER Not Null 
+DIA                             (TFECHAHORA) TIMESTAMP Not Null 
+ID_CAJA                         (TLLAVE) INTEGER Nullable 
+ACUMULADO_VENTAS                (TCURRENCY) NUMERIC(18, 4) Nullable DEFAULT 0
+ACUMULADO_ENTRADAS              (TCURRENCY) NUMERIC(18, 4) Nullable DEFAULT 0
+ACUMULADO_SALIDAS               (TCURRENCY) NUMERIC(18, 4) Nullable DEFAULT 0
+ACUMULADO_GANANCIA              (TCURRENCY) NUMERIC(18, 4) Nullable DEFAULT 0
+VENTAS_EFECTIVO                 (TCURRENCY) NUMERIC(18, 4) Nullable DEFAULT 0
+VENTAS_TARJETA                  (TCURRENCY) NUMERIC(18, 4) Nullable DEFAULT 0
+VENTAS_VALES                    (TCURRENCY) NUMERIC(18, 4) Nullable DEFAULT 0
+VENTAS_CREDITO                  (TCURRENCY) NUMERIC(18, 4) Nullable DEFAULT 0
+ABONOS_EFECTIVO                 (TCURRENCY) NUMERIC(18, 4) Nullable DEFAULT 0
+DEVOLUCIONES_VENTAS_EFECTIVO    (TCURRENCY) NUMERIC(18, 4) Nullable DEFAULT 0
+DEVOLUCIONES_VENTAS_CREDITO     (TCURRENCY) NUMERIC(18, 4) Nullable DEFAULT 0
+DEVOLUCIONES_ABONOS_EFECTIVO    (TCURRENCY) NUMERIC(18, 4) Nullable DEFAULT 0
+NUMERO_VENTAS                   (TINTEGER) INTEGER Nullable DEFAULT 0
+DEVOLUCIONES_VENTAS_VALES       (TCURRENCY) NUMERIC(18, 4) Nullable DEFAULT 0
+ABONOS_TARJETA                  (TCURRENCY) NUMERIC(18, 4) Nullable DEFAULT 0
+ABONOS_VALES                    (TCURRENCY) NUMERIC(18, 4) Nullable DEFAULT 0
+COMISIONES_TARJETA              (TMONEDA) BIGINT Nullable DEFAULT 0
+DEVOLUCIONES_VENTAS_TARJETA     NUMERIC(10, 4) Not Null DEFAULT 0.0000
+VENTAS_TRANSFERENCIA            NUMERIC(18, 4) Nullable DEFAULT 0
+ABONOS_TRANSFERENCIA            NUMERIC(18, 4) Nullable DEFAULT 0
+VENTAS_CHEQUE                   NUMERIC(18, 4) Nullable DEFAULT 0
+ABONOS_CHEQUE                   NUMERIC(18, 4) Nullable DEFAULT 0
+DEVOLUCIONES_VENTAS_TRANS       NUMERIC(18, 4) Nullable DEFAULT 0
+DEVOLUCIONES_VENTAS_CHEQUE      NUMERIC(18, 4) Nullable DEFAULT 0
+CONSTRAINT PK_CORTE_OPERACIONES:
+  Primary key (ID)
+CONSTRAINT UNQ1_CORTE_OPERACIONES:
+  Unique key (DIA, ID_CAJA)
+
+Triggers on Table CORTE_OPERACIONES:
+CORTE_OPERACIONES_BI, Sequence: 0, Type: BEFORE INSERT, Active
+SQL> 
+
+================================================================================
+TABLA: CORTE_VENTAS_DEPTO_OPERACIONES
+================================================================================
+
+Database:  C:\Program Files (x86)\AbarrotesMultiCaja\db\pdvdata.fdb, User: SYSDBA
+SQL> SQL> ID                              (TLLAVE) INTEGER Not Null 
+ID_DEPARTAMENTO                 (TLLAVE) INTEGER Nullable 
+ACUMULADO_VENTAS                (TMONEDA) BIGINT Nullable 
+ID_OPERACION                    (TLLAVE) INTEGER Nullable 
+ACUMULADO_GANANCIAS             (TCURRENCY) NUMERIC(18, 4) Nullable DEFAULT 0
+CONSTRAINT PK_CORTE_VENTAS_DEPTO_OPERACION:
+  Primary key (ID)
+
+Triggers on Table CORTE_VENTAS_DEPTO_OPERACIONES:
+CORTE_VENTAS_DE_BI, Sequence: 0, Type: BEFORE INSERT, Active
+SQL> 
+
+================================================================================
+TABLA: CORTE_VENTAS_POR_DEPTO
+================================================================================
+
+Database:  C:\Program Files (x86)\AbarrotesMultiCaja\db\pdvdata.fdb, User: SYSDBA
+SQL> SQL> ID                              (TLLAVE) INTEGER Not Null 
+ID_DEPARTAMENTO                 (TLLAVE) INTEGER Nullable 
+ACUMULADO_VENTAS                (TMONEDA) BIGINT Nullable 
+ID_TURNO                        (TLLAVE) INTEGER Nullable 
+ACUMULADO_GANANCIAS             (TCURRENCY) NUMERIC(18, 4) Nullable DEFAULT 0
+CONSTRAINT PK_CORTE_VENTAS_POR_DEPTO:
+  Primary key (ID)
+
+Triggers on Table CORTE_VENTAS_POR_DEPTO:
+CORTE_VENTAS_POR_DEPTO_BI, Sequence: 0, Type: BEFORE INSERT, Active
+SQL> 
+
+================================================================================
+TABLA: CREDITOS_ABONOS
+================================================================================
+
+Database:  C:\Program Files (x86)\AbarrotesMultiCaja\db\pdvdata.fdb, User: SYSDBA
+SQL> SQL> ID                              (TLLAVE) INTEGER Not Null 
+FECHA                           (TFECHAHORA) TIMESTAMP Not Null 
+MONTO                           (TMONEDA) BIGINT Nullable DEFAULT 0
+NOTA                            (TNOTA) BLOB segment 80, subtype BINARY Nullable 
+FORMA_PAGO                      (TFORMAPAGO) CHAR(10) Nullable 
+FACTURA_ID                      (TLLAVE) INTEGER Nullable 
+CANCELADO_EN                    (TFECHAHORA) TIMESTAMP Nullable 
+OLD_ABONO_ID                    (TLLAVE) INTEGER Nullable DEFAULT 0
+CONSTRAINT PK_CREDITOS_ABONOS_ID:
+  Primary key (ID)
+
+Triggers on Table CREDITOS_ABONOS:
+CREDITOS_ABONOS_BI, Sequence: 0, Type: BEFORE INSERT, Active
+SQL> 
+
+================================================================================
+TABLA: CREDITOS_ABONOS_ARTICULOS
+================================================================================
+
+Database:  C:\Program Files (x86)\AbarrotesMultiCaja\db\pdvdata.fdb, User: SYSDBA
+SQL> SQL> ID                              (TLLAVE) INTEGER Not Null 
+ABONO_ID                        (TLLAVE) INTEGER Not Null 
+ARTICULO_ID                     (TLLAVE) INTEGER Not Null 
+VENTA_ID                        (TLLAVE) INTEGER Not Null 
+MONTO_ACREDITADO                (TMONEDA) BIGINT Nullable DEFAULT 0
+GANANCIA_ACREDITADA             (TMONEDA) BIGINT Nullable DEFAULT 0
+CONSTRAINT PK_CA_ARTICULOS_ID:
+  Primary key (ID)
+
+Triggers on Table CREDITOS_ABONOS_ARTICULOS:
+CRED_ABONOS_ARTS_BI, Sequence: 0, Type: BEFORE INSERT, Active
+SQL> 
+
+================================================================================
+TABLA: CREDITOS_ABONOS_IMPUESTOS
+================================================================================
+
+Database:  C:\Program Files (x86)\AbarrotesMultiCaja\db\pdvdata.fdb, User: SYSDBA
+SQL> SQL> ID                              (TLLAVE) INTEGER Not Null 
+ABONO_ID                        (TLLAVE) INTEGER Not Null 
+VENTA_ID                        (TLLAVE) INTEGER Not Null 
+IMPUESTO_ID                     (TLLAVE) INTEGER Not Null 
+IMPUESTO_PORCENTAJE             (TMONEDA) BIGINT Not Null 
+IMPUESTO_BASE                   (TMONEDA) BIGINT Nullable DEFAULT 0
+IMPUESTO_MONTO                  (TMONEDA) BIGINT Nullable DEFAULT 0
+CONSTRAINT PK_CA_IMPUESTOS_ID:
+  Primary key (ID)
+
+Triggers on Table CREDITOS_ABONOS_IMPUESTOS:
+CRED_ABONOS_IMPS_BI, Sequence: 0, Type: BEFORE INSERT, Active
+SQL> 
+
+================================================================================
+TABLA: CREDITOS_ABONOS_PAGOS
+================================================================================
+
+Database:  C:\Program Files (x86)\AbarrotesMultiCaja\db\pdvdata.fdb, User: SYSDBA
+SQL> SQL> ID                              (TLLAVE) INTEGER Not Null 
+ABONO_ID                        (TLLAVE) INTEGER Not Null 
+FORMA_PAGO                      (TFORMAPAGO) CHAR(10) Nullable 
+COMISIONES_ABONO_ID             (TLLAVE) INTEGER Nullable 
+REFERENCIA                      (TNOTA) BLOB segment 80, subtype BINARY Nullable 
+TIPO_ABONO                      (TLLAVE) INTEGER Nullable 
+CAMBIO                          (TMONEDA) BIGINT Nullable DEFAULT 0
+CAMBIO_EN_DOLARES               (TMONEDA) BIGINT Nullable DEFAULT 0
+PAGO_CON                        (TMONEDA) BIGINT Nullable DEFAULT 0
+ID_SOLICITUD_TERMINAL           (TLLAVE) INTEGER Nullable 
+CONSTRAINT PK_CA_PAGOS_ID:
+  Primary key (ID)
+
+Triggers on Table CREDITOS_ABONOS_PAGOS:
+CREDITOS_ABONOS_PAGOS_BI, Sequence: 0, Type: BEFORE INSERT, Active
+SQL> 
+
+================================================================================
+TABLA: CREDITOS_ABONOS_VENTAS
+================================================================================
+
+Database:  C:\Program Files (x86)\AbarrotesMultiCaja\db\pdvdata.fdb, User: SYSDBA
+SQL> SQL> ID                              (TLLAVE) INTEGER Not Null 
+ABONO_ID                        (TLLAVE) INTEGER Not Null 
+VENTA_ID                        (TLLAVE) INTEGER Not Null 
+MONTO_ACREDITADO                (TMONEDA) BIGINT Nullable DEFAULT 0
+GANANCIA_ACREDITADA             (TMONEDA) BIGINT Nullable DEFAULT 0
+CONSTRAINT PK_CA_VENTAS_ID:
+  Primary key (ID)
+
+Triggers on Table CREDITOS_ABONOS_VENTAS:
+CREDITOS_ABONOS_VENTAS_BI, Sequence: 0, Type: BEFORE INSERT, Active
+SQL> 
+
+================================================================================
+TABLA: CREDITOS_ARTICULOS_IMPUESTOS
+================================================================================
+
+Database:  C:\Program Files (x86)\AbarrotesMultiCaja\db\pdvdata.fdb, User: SYSDBA
+SQL> SQL> ID                              (TLLAVE) INTEGER Not Null 
+ABONO_ID                        (TLLAVE) INTEGER Not Null 
+VENTA_ID                        (TLLAVE) INTEGER Not Null 
+ARTICULO_ID                     (TLLAVE) INTEGER Not Null 
+IMPUESTO_ID                     (TLLAVE) INTEGER Not Null 
+IMPUESTO_PORCENTAJE             (TMONEDA) BIGINT Not Null 
+IMPUESTO_BASE                   (TMONEDA) BIGINT Nullable DEFAULT 0
+IMPUESTO_MONTO                  (TMONEDA) BIGINT Nullable DEFAULT 0
+CONSTRAINT PK_CRED_ARTS_IMPUESTOS_ID:
+  Primary key (ID)
+
+Triggers on Table CREDITOS_ARTICULOS_IMPUESTOS:
+CRED_ARTS_IMPS_BI, Sequence: 0, Type: BEFORE INSERT, Active
+SQL> 
+
+================================================================================
+TABLA: CREDITOS_TRANSACCIONES
+================================================================================
+
+Database:  C:\Program Files (x86)\AbarrotesMultiCaja\db\pdvdata.fdb, User: SYSDBA
+SQL> SQL> ID                              (TLLAVE) INTEGER Not Null 
+FECHA                           (TFECHAHORA) TIMESTAMP Not Null 
+TIPO_MOVIMIENTO                 (TCADENAMEDIANA) VARCHAR(50) Not Null 
+ABONO_ID                        (TLLAVE) INTEGER Not Null 
+VENTA_ID                        (TLLAVE) INTEGER Not Null 
+TURNO_ID                        (TLLAVE) INTEGER Not Null 
+CLIENTE_ID                      (TLLAVE) INTEGER Not Null 
+SALDO_AL_MOMENTO                (TMONEDA) BIGINT Nullable DEFAULT 0
+MONTO_DEL_MOVIMIENTO            (TMONEDA) BIGINT Nullable DEFAULT 0
+CAJERO_ID                       (TLLAVE) INTEGER Not Null 
+CAJA_ID                         (TLLAVE) INTEGER Not Null 
+DEVOLUCION_ID                   (TLLAVE) INTEGER Nullable DEFAULT 0
+CONSTRAINT PK_CREDITOS_TRANSACCIONES_ID:
+  Primary key (ID)
+
+Triggers on Table CREDITOS_TRANSACCIONES:
+CREDITOS_TRANSACCIONES_BI, Sequence: 0, Type: BEFORE INSERT, Active
+SQL> 
+
+================================================================================
+TABLA: DEPARTAMENTOS
+================================================================================
+
+Database:  C:\Program Files (x86)\AbarrotesMultiCaja\db\pdvdata.fdb, User: SYSDBA
+SQL> SQL> ID                              (TLLAVE) INTEGER Not Null 
+NOMBRE                          VARCHAR(255) Not Null 
+PORCENTAJE_IMPUESTO             (TSMALLINT) SMALLINT Nullable DEFAULT 0.0
+ACTIVO                          (TBOOLEANO) CHAR(1) Nullable DEFAULT 1
+CONSTRAINT PK_DEPARTAMENTOS:
+  Primary key (ID)
+CONSTRAINT UNQ1_DEPARTAMENTOS:
+  Unique key (NOMBRE, ACTIVO)
+
+Triggers on Table DEPARTAMENTOS:
+DEPARTAMENTOS_BI, Sequence: 0, Type: BEFORE INSERT, Active
+SQL> 
+
+================================================================================
+TABLA: DEVOLUCIONES
+================================================================================
+
+Database:  C:\Program Files (x86)\AbarrotesMultiCaja\db\pdvdata.fdb, User: SYSDBA
+SQL> SQL> ID                              (TLLAVE) INTEGER Not Null 
+TURNO_ID                        (TLLAVE) INTEGER Nullable 
+TICKET_ID                       (TLLAVE) INTEGER Nullable 
+TIPO_DEVOLUCION                 (TBOOLEANO) CHAR(1) Nullable 
+PAGADO_EN                       (TFECHAHORA) TIMESTAMP Nullable 
+DEVUELTO_EN                     (TFECHAHORA) TIMESTAMP Nullable 
+CAJERO                          (TCADENAMEDIANA) VARCHAR(50) Nullable 
+CAJA                            (TCADENAMEDIANA) VARCHAR(50) Nullable 
+TOTAL_DEVUELTO                  (TMONEDA) BIGINT Nullable 
+SINCRONIZADO_EN                 (TFECHAHORA) TIMESTAMP Nullable 
+CONSTRAINT PK_DEVOLUCIONES:
+  Primary key (ID)
+
+Triggers on Table DEVOLUCIONES:
+DEVOLUCIONES_BI, Sequence: 0, Type: BEFORE INSERT, Active
+SQL> 
+
+================================================================================
+TABLA: DEVOLUCIONES_ARTICULOS
+================================================================================
+
+Database:  C:\Program Files (x86)\AbarrotesMultiCaja\db\pdvdata.fdb, User: SYSDBA
+SQL> SQL> ID                              (TLLAVE) INTEGER Not Null 
+DEVOLUCION_ID                   (TLLAVE) INTEGER Not Null 
+TICKET_ID                       (TLLAVE) INTEGER Nullable 
+CODIGO_PRODUCTO                 (TCODIGOPRODUCTO) VARCHAR(20) Nullable 
+DESCRIPCION_PRODUCTO            (TPRODUCTODESCRIPCION) VARCHAR(255) Nullable 
+CANTIDAD_DEVUELTA               (TCANTIDADINV) DOUBLE PRECISION Nullable 
+DINERO_DEVUELTO                 (TMONEDA) BIGINT Nullable 
+INVENTARIO_POST_DEVOLUCION      (TCANTIDADINV) DOUBLE PRECISION Nullable 
+CONSTRAINT PK_DEVOLUCIONES_ARTICULOS:
+  Primary key (ID)
+
+Triggers on Table DEVOLUCIONES_ARTICULOS:
+DEVOLUCIONES_ARTICULOS_BI, Sequence: 0, Type: BEFORE INSERT, Active
+SQL> 
+
+================================================================================
+TABLA: FACTURACION_CERTIFICADOS
+================================================================================
+
+Database:  C:\Program Files (x86)\AbarrotesMultiCaja\db\pdvdata.fdb, User: SYSDBA
+SQL> SQL> ID                              (TLLAVE) INTEGER Not Null 
+EMISOR_ID                       (TLLAVE) INTEGER Not Null 
+NUMERO_SERIE                    (TCADENALARGA) VARCHAR(255) Not Null 
+VIGENCIA_INICIO                 (TFECHAHORA) TIMESTAMP Not Null 
+VIGENCIA_FIN                    (TFECHAHORA) TIMESTAMP Not Null 
+CLAVE_LLAVE_PRIVADA             (TCADENALARGA) VARCHAR(255) Not Null 
+CONTENIDO_CERTIFICADO           (TARCHIVO) BLOB segment 80, subtype BINARY Nullable 
+CONTENIDO_LLAVEPRIVADA          (TARCHIVO) BLOB segment 80, subtype BINARY Nullable 
+CONSTRAINT PK_FACTURACION_CERTIFICADOS:
+  Primary key (ID)
+
+Triggers on Table FACTURACION_CERTIFICADOS:
+FACTURACION_CERTIFICADOS_BI, Sequence: 0, Type: BEFORE INSERT, Active
+SQL> 
+
+================================================================================
+TABLA: FACTURACION_CLIENTES
+================================================================================
+
+Database:  C:\Program Files (x86)\AbarrotesMultiCaja\db\pdvdata.fdb, User: SYSDBA
+SQL> SQL> ID                              (TLLAVE) INTEGER Not Null 
+RFC                             (TRFC) VARCHAR(13) Not Null 
+NOMBRE                          (TCADENALARGA) VARCHAR(255) Nullable 
+CALLE                           (TCADENALARGA) VARCHAR(255) Nullable 
+NOEXTERIOR                      (TCADENAMEDIANA) VARCHAR(50) Nullable 
+NOINTERIOR                      (TCADENAMEDIANA) VARCHAR(50) Nullable 
+COLONIA                         (TCADENALARGA) VARCHAR(255) Nullable 
+LOCALIDAD                       (TCADENALARGA) VARCHAR(255) Nullable 
+MUNICIPIO                       (TCADENALARGA) VARCHAR(255) Nullable 
+ESTADO                          (TCADENAMEDIANA) VARCHAR(50) Nullable 
+PAIS                            (TCADENALARGA) VARCHAR(255) Nullable 
+EMAIL                           (TCADENALARGA) VARCHAR(255) Nullable 
+REFERENCIA                      (TCADENALARGA) VARCHAR(255) Nullable 
+CODIGOPOSTAL                    (TCODIGOPOSTAL) INTEGER Nullable 
+REGIMENES                       (TNOTA) BLOB segment 80, subtype BINARY Nullable 
+ELIMINADO_EN                    (TFECHAHORA) TIMESTAMP Nullable 
+CONSTRAINT PK_FACTURACION_CLIENTES:
+  Primary key (ID)
+
+Triggers on Table FACTURACION_CLIENTES:
+FACTURACION_CLIENTES_BI, Sequence: 0, Type: BEFORE INSERT, Active
+SQL> 
+
+================================================================================
+TABLA: FACTURACION_EMISORES
+================================================================================
+
+Database:  C:\Program Files (x86)\AbarrotesMultiCaja\db\pdvdata.fdb, User: SYSDBA
+SQL> SQL> ID                              (TLLAVE) INTEGER Not Null 
+RFC                             (TRFC) VARCHAR(13) Not Null 
+NOMBRE                          (TCADENALARGA) VARCHAR(255) Nullable 
+CALLE                           (TCADENALARGA) VARCHAR(255) Nullable 
+NOEXTERIOR                      (TCADENAMEDIANA) VARCHAR(50) Nullable 
+NOINTERIOR                      (TCADENAMEDIANA) VARCHAR(50) Nullable 
+COLONIA                         (TCADENALARGA) VARCHAR(255) Nullable 
+LOCALIDAD                       (TCADENALARGA) VARCHAR(255) Nullable 
+MUNICIPIO                       (TCADENALARGA) VARCHAR(255) Nullable 
+ESTADO                          (TCADENAMEDIANA) VARCHAR(50) Nullable 
+PAIS                            (TCADENALARGA) VARCHAR(255) Nullable 
+EMAIL                           (TCADENALARGA) VARCHAR(255) Nullable 
+REFERENCIA                      (TCADENALARGA) VARCHAR(255) Nullable 
+CODIGOPOSTAL                    (TCODIGOPOSTAL) INTEGER Nullable 
+ACTIVO                          (TBOOLEANO) CHAR(1) Nullable 
+REGIMENES                       (TNOTA) BLOB segment 80, subtype BINARY Nullable 
+CONSTRAINT PK_FACTURACION_EMISORES:
+  Primary key (ID)
+
+Triggers on Table FACTURACION_EMISORES:
+FACTURACION_EMISORES_BI, Sequence: 0, Type: BEFORE INSERT, Active
+SQL> 
+
+================================================================================
+TABLA: FACTURACION_FOLIOS
+================================================================================
+
+Database:  C:\Program Files (x86)\AbarrotesMultiCaja\db\pdvdata.fdb, User: SYSDBA
+SQL> SQL> ID                              (TLLAVE) INTEGER Not Null 
+EMISOR_ID                       (TLLAVE) INTEGER Not Null 
+SERIE                           (TCADENAMEDIANA) VARCHAR(50) Nullable 
+FOLIO_INICIAL                   (TFACTURAFOLIOOPCIONAL) INTEGER Nullable 
+FOLIO_FINAL                     (TFACTURAFOLIOOPCIONAL) INTEGER Nullable 
+SIGUIENTE_FOLIO                 (TFACTURAFOLIOOPCIONAL) INTEGER Nullable 
+NUMERO_APROBACION               (TCADENAMEDIANA) VARCHAR(50) Not Null 
+ANO_APROBACION                  (TSMALLINT) SMALLINT Not Null 
+CONSTRAINT PK_FACTURACION_FOLIOS:
+  Primary key (ID)
+
+Triggers on Table FACTURACION_FOLIOS:
+FACTURACION_FOLIOS_BI, Sequence: 0, Type: BEFORE INSERT, Active
+SQL> 
+
+================================================================================
+TABLA: FACTURAS
+================================================================================
+
+Database:  C:\Program Files (x86)\AbarrotesMultiCaja\db\pdvdata.fdb, User: SYSDBA
+SQL> SQL> ID                              (TLLAVE) INTEGER Not Null 
+SERIE                           (TCADENAMEDIANA) VARCHAR(50) Nullable 
+FOLIO_ID                        (TLLAVE) INTEGER Not Null 
+GENERADA_EN                     (TFECHAHORA) TIMESTAMP Not Null 
+TRANSACCION_DE                  (TFECHAHORA) TIMESTAMP Nullable 
+FACTURACION_CLIENTE_ID          (TLLAVE) INTEGER Not Null DEFAULT 0
+FACTURACION_EMISOR_ID           (TLLAVE) INTEGER Not Null 
+VENTATICKET_ID                  (TLLAVE) INTEGER Nullable 
+VENTATICKET_FOLIO               (TFOLIO) INTEGER Nullable 
+SUBTOTAL                        (TMONEDA) BIGINT Nullable 
+IMPUESTOS                       (TMONEDA) BIGINT Nullable 
+TOTAL                           (TMONEDA) BIGINT Nullable 
+XML                             (TFACTURAXML) BLOB segment 80, subtype BINARY Not Null 
+CANCELADA_EN                    (TFECHAHORA) TIMESTAMP Nullable 
+TIPO                            (TTIPOFACTURA) CHAR(1) Not Null DEFAULT 'n'
+CERTIFICADO_ID                  (TLLAVE) INTEGER Nullable 
+TURNO_ID                        (TLLAVE) INTEGER Nullable 
+VERSION_CFD                     (TFACTURAVERSION) VARCHAR(4) Nullable DEFAULT '2.2'
+                                CHECK (Value in ('2.0','2.2','3.2','3.3','4.0'))
+UUID                            (TFACTURAUUID) VARCHAR(38) Nullable 
+TIMBRADA_EN                     (TFECHAHORA) TIMESTAMP Nullable 
+PAC                             (TFACTURAPAC) VARCHAR(3) Nullable 
+SE_MANDO_TIMBRAR_EN             (TFECHAHORA) TIMESTAMP Nullable 
+SE_MANDO_CANCELAR_EN            (TFECHAHORA) TIMESTAMP Nullable 
+EXTRAS_POR_ARTICULO             (TNOTA) BLOB segment 80, subtype BINARY Nullable 
+ACUSE_CANCELACION               (TCADENAACUSE) VARCHAR(3000) Nullable 
+FOLIO                           (TINTEGER) INTEGER Nullable DEFAULT 0
+ABONO_ID                        (TLLAVE) INTEGER Nullable 
+FACTURA_RELACIONADA_ID          (TLLAVE) INTEGER Nullable 
+IMPUESTOS_LOCALES               (TCURRENCY) NUMERIC(18, 4) Nullable DEFAULT 0
+ESTADO                          VARCHAR(2) Nullable DEFAULT 'b'
+CLIENTESV2_FACTURACION_ID       INTEGER Nullable 
+IMPUESTOS_RETENIDOS             (TCURRENCY) NUMERIC(18, 4) Nullable DEFAULT 0
+CONSTRAINT PK_FACTURAS:
+  Primary key (ID)
+
+Triggers on Table FACTURAS:
+FACTURAS_BI, Sequence: 0, Type: BEFORE INSERT, Active
+FACTURAS_BI_FOLIO, Sequence: 0, Type: BEFORE INSERT, Active
+SQL> 
+
+================================================================================
+TABLA: FACTURAS_ABONOS
+================================================================================
+
+Database:  C:\Program Files (x86)\AbarrotesMultiCaja\db\pdvdata.fdb, User: SYSDBA
+SQL> SQL> FACTURA_ID                      (TLLAVE) INTEGER Not Null 
+ABONO_ID                        (TLLAVE) INTEGER Not Null 
+FACTURA_PADRE_ID                (TLLAVE) INTEGER Not Null 
+CONSTRAINT FACTURAS_ABONOS_PK:
+  Primary key (FACTURA_ID, ABONO_ID, FACTURA_PADRE_ID)
+SQL> 
+
+================================================================================
+TABLA: HISTORIAL_INVENTARIO
+================================================================================
+
+Database:  C:\Program Files (x86)\AbarrotesMultiCaja\db\pdvdata.fdb, User: SYSDBA
+SQL> SQL> ID                              (TLLAVE) INTEGER Not Null 
+USUARIO_ID                      (TLLAVE) INTEGER Not Null 
+CUANDO_FUE                      (TFECHAHORA) TIMESTAMP Not Null 
+TIPO                            (TTIPOMOVIMIENTO) CHAR(1) Not Null 
+HABIA                           (TCANTIDAD) FLOAT Nullable 
+CANTIDAD                        (TCANTIDAD) FLOAT Not Null 
+CODIGO_PRODUCTO                 (TCODIGOPRODUCTO) VARCHAR(20) Not Null 
+CAJA_ID                         (TLLAVE) INTEGER Nullable 
+TURNO_ID                        (TLLAVE) INTEGER Nullable 
+CONSTRAINT PK_HISTORIAL_INVENTARIO:
+  Primary key (ID)
+
+Triggers on Table HISTORIAL_INVENTARIO:
+HISTORIAL_INVENTARIO_BI, Sequence: 0, Type: BEFORE INSERT, Active
+SQL> 
+
+================================================================================
+TABLA: IMPUESTOS
+================================================================================
+
+Database:  C:\Program Files (x86)\AbarrotesMultiCaja\db\pdvdata.fdb, User: SYSDBA
+SQL> SQL> ID                              (TLLAVE) INTEGER Not Null 
+NOMBRE                          (TCADENAMEDIANA) VARCHAR(50) Nullable 
+PORCENTAJE                      (TCANTIDAD) FLOAT Nullable 
+DEFECTO                         (TBOOLEANO) CHAR(1) Nullable 
+ACTIVO                          (TBOOLEANO) CHAR(1) Nullable 
+ORIGEN                          (TCARACTER) CHAR(1) Not Null DEFAULT 'F'
+BASE_GRAVABLE                   (TBOOLEANO) CHAR(1) Not Null DEFAULT 'F'
+TIPO                            CHAR(1) Not Null DEFAULT 'T'
+CONSTRAINT PK_IMPUESTOS:
+  Primary key (ID)
+
+Triggers on Table IMPUESTOS:
+IMPUESTOS_BI, Sequence: 0, Type: BEFORE INSERT, Active
+SQL> 
+
+================================================================================
+TABLA: IMPUESTOS_REGLAS
+================================================================================
+
+Database:  C:\Program Files (x86)\AbarrotesMultiCaja\db\pdvdata.fdb, User: SYSDBA
+SQL> SQL> ID                              (TLLAVE) INTEGER Not Null 
+IMPUESTO_ID                     (TLLAVE) INTEGER Not Null 
+RECEPTOR_CLAVE_REGIMEN          (TCADENAMEDIANA) VARCHAR(50) Nullable 
+TIPO_CONTRIBUYENTE              (TCADENAMEDIANA) VARCHAR(50) Nullable DEFAULT NULL
+CONSTRAINT PK_IMPUESTOS_REGLAS:
+  Primary key (ID)
+
+Triggers on Table IMPUESTOS_REGLAS:
+IMPUESTOS_REGLAS_BI, Sequence: 0, Type: BEFORE INSERT, Active
+SQL> 
+
+================================================================================
+TABLA: INVENTARIO_AJUSTES
+================================================================================
+
+Database:  C:\Program Files (x86)\AbarrotesMultiCaja\db\pdvdata.fdb, User: SYSDBA
+SQL> SQL> ID                              (TLLAVE) INTEGER Not Null 
+FOLIO                           (TLLAVE) INTEGER Not Null 
+CUANDO_FUE                      (TFECHAHORA) TIMESTAMP Not Null 
+PRODUCTO_ID                     (TLLAVE) INTEGER Not Null 
+CANTIDAD                        (TCANTIDAD) FLOAT Not Null 
+COSTO_UNITARIO                  (TMONEDA) BIGINT Not Null 
+DESCRIPCION                     (TCADENALARGA) VARCHAR(255) Not Null 
+MOTIVO                          (TCADENALARGA) VARCHAR(255) Not Null 
+CAJA_ID                         (TLLAVE) INTEGER Nullable 
+USUARIO_ID                      (TLLAVE) INTEGER Nullable 
+ALMACEN_ID                      (TLLAVE) INTEGER Nullable 
+CONSTRAINT INTEG_176:
+  Primary key (ID)
+
+Triggers on Table INVENTARIO_AJUSTES:
+INVENTARIO_AJUSTES_BI, Sequence: 0, Type: BEFORE INSERT, Active
+SQL> 
+
+================================================================================
+TABLA: INVENTARIO_APARTADO
+================================================================================
+
+Database:  C:\Program Files (x86)\AbarrotesMultiCaja\db\pdvdata.fdb, User: SYSDBA
+SQL> SQL> PRODUCTO_ID                     (TLLAVE) INTEGER Not Null 
+CANTIDAD_APARTADA               (TCANTIDAD) FLOAT Not Null 
+TICKET_ID                       (TLLAVE) INTEGER Nullable 
+CAJA_ID                         (TLLAVE) INTEGER Nullable 
+CONSTRAINT FK_INVENTARIO_APARTADO_1:
+  Foreign key (PRODUCTO_ID)    References PRODUCTOS (ID) On Update Cascade
+SQL> 
+
+================================================================================
+TABLA: INVENTARIO_BALANCES
+================================================================================
+
+Database:  C:\Program Files (x86)\AbarrotesMultiCaja\db\pdvdata.fdb, User: SYSDBA
+SQL> SQL> PRODUCTO_ID                     (TLLAVE) INTEGER Not Null 
+CANTIDAD_ACTUAL                 (TCANTIDAD) FLOAT Nullable 
+ALMACEN_ID                      (TLLAVE) INTEGER Nullable 
+CONSTRAINT FK_INVENTARIO_BALANCES_1:
+  Foreign key (PRODUCTO_ID)    References PRODUCTOS (ID) On Update Cascade
+CONSTRAINT FK_INVENTARIO_BALANCES_2:
+  Foreign key (ALMACEN_ID)    References ALMACENES (ID) On Update Cascade
+CONSTRAINT INTEG_21:
+  Unique key (PRODUCTO_ID)
+SQL> 
+
+================================================================================
+TABLA: INVENTARIO_HISTORIAL
+================================================================================
+
+Database:  C:\Program Files (x86)\AbarrotesMultiCaja\db\pdvdata.fdb, User: SYSDBA
+SQL> SQL> ID                              (TLLAVE) INTEGER Not Null 
+PRODUCTO_ID                     (TLLAVE) INTEGER Not Null 
+CUANDO_FUE                      (TFECHAHORA) TIMESTAMP Not Null 
+CANTIDAD_ANTERIOR               (TCANTIDAD) FLOAT Not Null 
+CANTIDAD                        (TCANTIDAD) FLOAT Not Null 
+DESCRIPCION                     (TCADENALARGA) VARCHAR(255) Nullable 
+COSTO_UNITARIO                  (TMONEDA) BIGINT Nullable 
+COSTO_DESPUES                   (TMONEDA) BIGINT Nullable 
+AJUSTE_ID                       (TLLAVE) INTEGER Nullable 
+RECIBO_INVENTARIO_ID            (TLLAVE) INTEGER Nullable 
+VENTA_ID                        (TLLAVE) INTEGER Nullable 
+TRANSFERENCIA_ID                (TLLAVE) INTEGER Nullable 
+CAJA_ID                         (TLLAVE) INTEGER Nullable 
+USUARIO_ID                      (TLLAVE) INTEGER Nullable 
+ALMACEN_ID                      (TLLAVE) INTEGER Nullable 
+VENTA_POR_KIT                   (TBOOLEANO) CHAR(1) Nullable DEFAULT 'f'
+CONSTRAINT FK_INVENTARIO_HISTORIAL_1:
+  Foreign key (PRODUCTO_ID)    References PRODUCTOS (ID) On Update Cascade
+CONSTRAINT FK_INVENTARIO_HISTORIAL_2:
+  Foreign key (ALMACEN_ID)    References ALMACENES (ID) On Update Cascade
+CONSTRAINT INTEG_36:
+  Primary key (ID)
+
+Triggers on Table INVENTARIO_HISTORIAL:
+INVENTARIO_HISTORIAL_BI, Sequence: 0, Type: BEFORE INSERT, Active
+SQL> 
+
+================================================================================
+TABLA: INVENTARIO_RECIBOS
+================================================================================
+
+Database:  C:\Program Files (x86)\AbarrotesMultiCaja\db\pdvdata.fdb, User: SYSDBA
+SQL> SQL> ID                              (TLLAVE) INTEGER Not Null 
+FOLIO                           (TLLAVE) INTEGER Not Null 
+RECIBIDO_EN                     (TFECHAHORA) TIMESTAMP Not Null 
+ORDEN_DE_COMPRA_ID              (TLLAVE) INTEGER Nullable 
+CAJA_ID                         (TLLAVE) INTEGER Nullable 
+USUARIO_ID                      (TLLAVE) INTEGER Nullable 
+ALMACEN_ID                      (TLLAVE) INTEGER Nullable 
+CONSTRAINT FK_INVENTARIO_RECIBOS_1:
+  Foreign key (ALMACEN_ID)    References ALMACENES (ID) On Update Cascade
+CONSTRAINT INTEG_50:
+  Primary key (ID)
+
+Triggers on Table INVENTARIO_RECIBOS:
+INVENTARIO_RECIBOS_BI, Sequence: 0, Type: BEFORE INSERT, Active
+SQL> 
+
+================================================================================
+TABLA: INVENTARIO_RECIBOS_DETALLE
+================================================================================
+
+Database:  C:\Program Files (x86)\AbarrotesMultiCaja\db\pdvdata.fdb, User: SYSDBA
+SQL> SQL> INVENTARIO_RECIBO_ID            (TLLAVE) INTEGER Not Null 
+SECUENCIA                       (TLLAVE) INTEGER Not Null 
+PRODUCTO_ID                     (TLLAVE) INTEGER Not Null 
+CANTIDAD_RECIBIDA               (TCANTIDAD) FLOAT Not Null 
+COSTO_UNITARIO                  (TMONEDA) BIGINT Not Null 
+CONSTRAINT FK_INVENTARIO_RECIBOS_DETALLE_1:
+  Foreign key (PRODUCTO_ID)    References PRODUCTOS (ID) On Update Cascade
+CONSTRAINT UNQ1_INVENTARIO_RECIBOS_DETALLE:
+  Unique key (INVENTARIO_RECIBO_ID, PRODUCTO_ID)
+SQL> 
+
+================================================================================
+TABLA: LISTA_DE_COMPRA
+================================================================================
+
+Database:  C:\Program Files (x86)\AbarrotesMultiCaja\db\pdvdata.fdb, User: SYSDBA
+SQL> SQL> ID                              (TLLAVE) INTEGER Not Null 
+ID_PRODUCTO                     (TLLAVE) INTEGER Nullable 
+CODIGO_PRODUCTO                 (TCODIGOPRODUCTO) VARCHAR(20) Nullable 
+DESCRIPCION_PRODUCTO            (TPRODUCTODESCRIPCION) VARCHAR(255) Nullable 
+DEPARTAMENTO_PRODUCTO           (TCADENAMEDIANA) VARCHAR(50) Nullable 
+ID_PROVEEDOR_ACTUAL             (TLLAVE) INTEGER Nullable 
+ULTIMO_COSTO                    (TMONEDA) BIGINT Nullable 
+CANTIDAD_A_ORDENAR              (TCANTIDADINV) DOUBLE PRECISION Nullable 
+AGREGADO_EN                     (TFECHAHORA) TIMESTAMP Nullable 
+CONSTRAINT PK_LISTA_DE_COMPRA:
+  Primary key (ID)
+
+Triggers on Table LISTA_DE_COMPRA:
+LISTA_DE_COMPRA_BI, Sequence: 0, Type: BEFORE INSERT, Active
+SQL> 
+
+================================================================================
+TABLA: MEDIDAS
+================================================================================
+
+Database:  C:\Program Files (x86)\AbarrotesMultiCaja\db\pdvdata.fdb, User: SYSDBA
+SQL> SQL> ID                              (TLLAVE) INTEGER Not Null 
+UNIDAD_ENTEROS                  (TCADENAMEDIANA) VARCHAR(50) Not Null 
+UNIDAD_FRACCIONES               (TCADENAMEDIANA) VARCHAR(50) Not Null 
+FACTOR                          (TINTEGER) INTEGER Nullable DEFAULT 1
+ACTIVO                          (TBOOLEANO) CHAR(1) Nullable DEFAULT 1
+CONSTRAINT PK_MEDIDAS:
+  Primary key (ID)
+CONSTRAINT UNQ1_MEDIDAS:
+  Unique key (UNIDAD_ENTEROS, ACTIVO)
+
+Triggers on Table MEDIDAS:
+MEDIDAS_BI, Sequence: 0, Type: BEFORE INSERT, Active
+SQL> 
+
+================================================================================
+TABLA: MOVIMIENTOS
+================================================================================
+
+Database:  C:\Program Files (x86)\AbarrotesMultiCaja\db\pdvdata.fdb, User: SYSDBA
+SQL> SQL> ID                              (TLLAVE) INTEGER Not Null 
+OPERACION_ID                    (TLLAVE) INTEGER Not Null 
+MONTO                           (TMONEDA) BIGINT Nullable 
+CUANDO_FUE                      (TFECHAHORA) TIMESTAMP Not Null 
+COMENTARIOS                     (TCADENALARGA) VARCHAR(255) Nullable 
+TIPO                            (TTIPOMOVIMIENTO) CHAR(1) Not Null 
+CLIENTE_ID                      (TLLAVE) INTEGER Nullable 
+CAJA_ID                         (TLLAVE) INTEGER Not Null 
+CAJERO_ID                       (TLLAVE) INTEGER Not Null 
+ABONO_ID                        (TLLAVE) INTEGER Nullable 
+CLIENTESV2_CREDITO_ID           INTEGER Nullable 
+CONSTRAINT PK_MOVIMIENTOS:
+  Primary key (ID)
+
+Triggers on Table MOVIMIENTOS:
+MOVIMIENTOS_BI, Sequence: 0, Type: BEFORE INSERT, Active
+SQL> 
+
+================================================================================
+TABLA: OPERACIONES
+================================================================================
+
+Database:  C:\Program Files (x86)\AbarrotesMultiCaja\db\pdvdata.fdb, User: SYSDBA
+SQL> SQL> ID                              (TLLAVE) INTEGER Not Null 
+DINERO_EN_CAJA                  (TMONEDA) BIGINT Nullable DEFAULT 0
+TIPO_DE_CAMBIO                  (TMONEDA) BIGINT Nullable DEFAULT 0
+INICIO_USUARIO_ID               (TLLAVE) INTEGER Not Null 
+INICIO_EN                       (TFECHAHORA) TIMESTAMP Not Null 
+CERRO_EN                        (TFECHAHORA) TIMESTAMP Nullable 
+CAJA_ID                         (TLLAVE) INTEGER Not Null 
+ABIERTA                         (TBOOLEANO) CHAR(1) Nullable DEFAULT 't'
+VENTAS                          (TMONEDA) BIGINT Nullable DEFAULT 0
+SALIDAS                         (TMONEDA) BIGINT Nullable DEFAULT 0
+ENTRADAS                        (TMONEDA) BIGINT Nullable DEFAULT 0
+PAGOS                           (TMONEDA) BIGINT Nullable DEFAULT 0
+IMPUESTOS                       (TMONEDA) BIGINT Nullable DEFAULT 0
+GANANCIAS                       (TMONEDA) BIGINT Nullable DEFAULT 0
+ABONO_ID                        (TLLAVE) INTEGER Nullable 
+INGRESOS_TARJETA                (TMONEDA) BIGINT Nullable DEFAULT 0
+INGRESOS_VALES                  (TMONEDA) BIGINT Nullable DEFAULT 0
+INGRESOS_EFECTIVO               (TMONEDA) BIGINT Nullable DEFAULT 0
+CONSTRAINT PK_OPERACIONES:
+  Primary key (ID)
+SQL> 
+
+================================================================================
+TABLA: ORDENES_DE_COMPRA
+================================================================================
+
+Database:  C:\Program Files (x86)\AbarrotesMultiCaja\db\pdvdata.fdb, User: SYSDBA
+SQL> SQL> ID                              (TLLAVE) INTEGER Not Null 
+ID_PROVEEDOR                    (TLLAVE) INTEGER Nullable 
+FOLIO_ORDEN_PROVEEDOR           (TCADENAMEDIANA) VARCHAR(50) Nullable 
+CREADA_EN                       (TFECHAHORA) TIMESTAMP Nullable 
+CANCELADA_EN                    (TFECHAHORA) TIMESTAMP Nullable 
+ENVIADA_EN                      (TFECHAHORA) TIMESTAMP Nullable 
+RECIBIDA_EN                     (TFECHAHORA) TIMESTAMP Nullable 
+ESTADO                          (TCARACTER) CHAR(1) Nullable 
+UTILIDAD_ENVIADO                (TMONEDA) BIGINT Nullable 
+IMPUESTOS_ENVIADO               (TMONEDA) BIGINT Nullable 
+SUBTOTAL_ENVIADO                (TMONEDA) BIGINT Nullable 
+TOTAL_ENVIADO                   (TMONEDA) BIGINT Nullable 
+UTILIDAD_RECIBIDO               (TMONEDA) BIGINT Nullable 
+IMPUESTOS_RECIBIDO              (TMONEDA) BIGINT Nullable 
+SUBTOTAL_RECIBIDO               (TMONEDA) BIGINT Nullable 
+TOTAL_RECIBIDO                  (TMONEDA) BIGINT Nullable 
+NOTAS                           (TCADENAGIGANTE) VARCHAR(1000) Nullable 
+TOTAL_ARTICULOS                 (TINTEGER) INTEGER Nullable default 0
+CONSTRAINT PK_ORDENES_DE_COMPRA:
+  Primary key (ID)
+
+Triggers on Table ORDENES_DE_COMPRA:
+ORDENES_DE_COMPRA_BI, Sequence: 0, Type: BEFORE INSERT, Active
+SQL> 
+
+================================================================================
+TABLA: PAGOS_MIXTOS
+================================================================================
+
+Database:  C:\Program Files (x86)\AbarrotesMultiCaja\db\pdvdata.fdb, User: SYSDBA
+SQL> SQL> ID                              (TLLAVE) INTEGER Not Null 
+TICKET_ID                       (TLLAVE) INTEGER Nullable 
+ABONO_ID                        (TLLAVE) INTEGER Nullable 
+FORMA_DE_PAGO                   (TCARACTER) CHAR(1) Not Null 
+MONTO                           (TMONEDA) BIGINT Not Null 
+REFERENCIA                      (TCADENALARGA) VARCHAR(255) Nullable 
+CLIENTE_ID                      (TLLAVE) INTEGER Nullable 
+CLIENTESV2_CREDITO_ID           INTEGER Nullable 
+CONSTRAINT PK_PAGOS_MIXTOS:
+  Primary key (ID)
+
+Triggers on Table PAGOS_MIXTOS:
+PAGOS_MIXTOS_BI, Sequence: 0, Type: BEFORE INSERT, Active
+SQL> 
+
+================================================================================
+TABLA: PRODUCTOS
+================================================================================
+
+Database:  C:\Program Files (x86)\AbarrotesMultiCaja\db\pdvdata.fdb, User: SYSDBA
+SQL> SQL> ID                              (TLLAVE) INTEGER Not Null 
+CODIGO                          (TCADENAMEDIANA) VARCHAR(50) Not Null 
+DESCRIPCION                     (TPRODUCTODESCRIPCION) VARCHAR(255) Nullable 
+TVENTA                          (TTIPOVENTA) CHAR(1) Not Null 
+PCOSTO                          (TMONEDA) BIGINT Nullable 
+PVENTA                          (TMONEDA) BIGINT Nullable 
+DEPT                            (TLLAVE) INTEGER Nullable 
+PROVID                          (TLLAVE) INTEGER Nullable 
+UMEDIDA                         (TLLAVE) INTEGER Nullable 
+MAYOREO                         (TMONEDA) BIGINT Nullable 
+IPRIORIDAD                      (TSMALLINT) SMALLINT Nullable 
+DINVENTARIO                     (TCANTIDADINV) DOUBLE PRECISION Nullable 
+DINVMINIMO                      (TCANTIDADINV) DOUBLE PRECISION Nullable 
+DINVMAXIMO                      (TCANTIDADINV) DOUBLE PRECISION Nullable 
+CHECADO_EN                      (TFECHA) DATE Nullable 
+PORCENTAJE_GANANCIA             (TPORCENTAJEGANANCIA) NUMERIC(15, 3) Nullable DEFAULT 0
+IMPUESTOS                       (TCADENALARGA) VARCHAR(255) Nullable 
+PVENTA_ANTERIOR                 (TMONEDA) BIGINT Nullable DEFAULT 0
+PCOSTO_ANTERIOR                 (TMONEDA) BIGINT Nullable DEFAULT 0
+PMAYOREO_ANTERIOR               (TMONEDA) BIGINT Nullable DEFAULT 0
+MEDIDA_ID                       (TLLAVE) INTEGER Nullable 
+PFINAL                          (TMONEDA) BIGINT Nullable DEFAULT 0
+PMAYOREOFINAL                   (TMONEDA) BIGINT Nullable DEFAULT 0
+ES_KIT                          (TBOOLEANO) CHAR(1) Nullable DEFAULT 'f'
+USA_INVENTARIO                  (TBOOLEANO) CHAR(1) Nullable DEFAULT 'f'
+ELIMINADO_EN                    (TFECHAHORA) TIMESTAMP Nullable 
+CONSTRAINT PK_PRODUCTOS:
+  Primary key (ID)
+CONSTRAINT UNQ1_PRODUCTOS:
+  Unique key (CODIGO)
+
+Triggers on Table PRODUCTOS:
+PRODUCTOS_BI, Sequence: 0, Type: BEFORE INSERT, Active
+SQL> 
+
+================================================================================
+TABLA: PRODUCTOS_BASE
+================================================================================
+
+Database:  C:\Program Files (x86)\AbarrotesMultiCaja\db\pdvdata.fdb, User: SYSDBA
+SQL> SQL> CODIGO                          (TCODIGOPRODUCTO) VARCHAR(20) Not Null 
+DESCRIPCION                     (TPRODUCTODESCRIPCION) VARCHAR(255) Nullable 
+CONSTRAINT PK_PRODUCTOS_BASE:
+  Primary key (CODIGO)
+SQL> 
+
+================================================================================
+TABLA: PRODUCTOS_CFDI
+================================================================================
+
+Database:  C:\Program Files (x86)\AbarrotesMultiCaja\db\pdvdata.fdb, User: SYSDBA
+SQL> SQL> ID                              (TLLAVE) INTEGER Not Null 
+PRODUCTO_CODIGO                 (TCODIGOPRODUCTO) VARCHAR(20) Nullable 
+CLAVEPRODSERV                   (TCADENAMEDIANA) VARCHAR(50) Nullable 
+CLAVEUNIDADMEDIDA               (TCADENAMEDIANA) VARCHAR(50) Nullable 
+CONSTRAINT PK_PRODUCTOS_CFDI:
+  Primary key (ID)
+
+Triggers on Table PRODUCTOS_CFDI:
+PRODUCTOS_CFDI_BI, Sequence: 0, Type: BEFORE INSERT, Active
+SQL> 
+
+================================================================================
+TABLA: PRODUCTOS_UDF_RECARGAS
+================================================================================
+
+Database:  C:\Program Files (x86)\AbarrotesMultiCaja\db\pdvdata.fdb, User: SYSDBA
+SQL> SQL> PRODUCTO_CODIGO                 (TCODIGOPRODUCTO) VARCHAR(20) Not Null 
+SOPORTA_TELCEL                  (TBOOLEANO) CHAR(1) Not Null DEFAULT 'F'
+SOPORTA_MOVISTAR                (TBOOLEANO) CHAR(1) Not Null DEFAULT 'F'
+SOPORTA_NEXTEL                  (TBOOLEANO) CHAR(1) Not Null DEFAULT 'F'
+SOPORTA_IUSACELL                (TBOOLEANO) CHAR(1) Not Null DEFAULT 'F'
+SOPORTA_UNEFON                  (TBOOLEANO) CHAR(1) Not Null DEFAULT 'F'
+CARRIERS                        BLOB segment 80, subtype BINARY Nullable DEFAULT NULL
+CONSTRAINT PK_PRODUCTOS_UDF_RECARGAS:
+  Primary key (PRODUCTO_CODIGO)
+SQL> 
+
+================================================================================
+TABLA: PRODUCTOS_UDF_SERVICIOS
+================================================================================
+
+Database:  C:\Program Files (x86)\AbarrotesMultiCaja\db\pdvdata.fdb, User: SYSDBA
+SQL> SQL> PRODUCTO_CODIGO                 (TCODIGOPRODUCTO) VARCHAR(20) Not Null 
+PROVEEDOR                       (TCADENAMEDIANA) VARCHAR(50) Not Null 
+CODIGO_INTERNO_PROVEEDOR        (TCODIGOPRODUCTO) VARCHAR(20) Not Null 
+SOPORTA_CONSULTA                CHAR(1) Nullable default 'f'
+CONSTRAINT PK_PRODUCTOS_UDF_SERVICIOS:
+  Primary key (PRODUCTO_CODIGO)
+SQL> 
+
+================================================================================
+TABLA: PRODUCTO_COMPONENTES
+================================================================================
+
+Database:  C:\Program Files (x86)\AbarrotesMultiCaja\db\pdvdata.fdb, User: SYSDBA
+SQL> SQL> PRODUCTO_PADRE_ID               (TLLAVE) INTEGER Not Null 
+PRODUCTO_HIJO_ID                (TLLAVE) INTEGER Not Null 
+CANTIDAD                        (TCANTIDAD) FLOAT Not Null 
+CONSTRAINT UNQ_COMPONENTES_PADRE_HIJO:
+  Unique key (PRODUCTO_PADRE_ID, PRODUCTO_HIJO_ID)
+SQL> 
+
+================================================================================
+TABLA: PROMOCIONES_POR_CANTIDAD
+================================================================================
+
+Database:  C:\Program Files (x86)\AbarrotesMultiCaja\db\pdvdata.fdb, User: SYSDBA
+SQL> SQL> ID                              (TLLAVE) INTEGER Not Null 
+NOMBRE                          (TCADENAMEDIANA) VARCHAR(50) Nullable 
+PRODUCTO_CODIGO                 (TCODIGOPRODUCTO) VARCHAR(20) Nullable 
+DESDE                           (TCANTIDAD) FLOAT Nullable 
+HASTA                           (TCANTIDAD) FLOAT Nullable 
+PRECIO_PROMOCION                (TMONEDA) BIGINT Nullable 
+PRECIO_PROMOCION_CON_IMPUESTOS  (TMONEDA) BIGINT Not Null DEFAULT 0
+CONSTRAINT PK_PROMOCIONES_POR_CANTIDAD:
+  Primary key (ID)
+
+Triggers on Table PROMOCIONES_POR_CANTIDAD:
+PROMOCIONES_POR_CANTIDAD_BI, Sequence: 0, Type: BEFORE INSERT, Active
+SQL> 
+
+================================================================================
+TABLA: PROVEEDORES
+================================================================================
+
+Database:  C:\Program Files (x86)\AbarrotesMultiCaja\db\pdvdata.fdb, User: SYSDBA
+SQL> SQL> ID                              (TLLAVE) INTEGER Not Null 
+NOMBRE                          (TCADENAMEDIANA) VARCHAR(50) Nullable 
+REPRESENTANTE                   (TCADENALARGA) VARCHAR(255) Nullable 
+TELEFONOS                       (TCADENALARGA) VARCHAR(255) Nullable 
+CORREOS                         (TCADENALARGA) VARCHAR(255) Nullable 
+PAGINA_WEB                      (TCADENAMEDIANA) VARCHAR(50) Nullable 
+NOTAS                           (TCADENAGIGANTE) VARCHAR(1000) Nullable 
+BORRADO_EN                      (TFECHAHORA) TIMESTAMP Nullable 
+CONSTRAINT PK_PROVEEDORES:
+  Primary key (ID)
+
+Triggers on Table PROVEEDORES:
+PROVEEDORES_BI, Sequence: 0, Type: BEFORE INSERT, Active
+SQL> 
+
+================================================================================
+TABLA: PROVEEDORES_BASE
+================================================================================
+
+Database:  C:\Program Files (x86)\AbarrotesMultiCaja\db\pdvdata.fdb, User: SYSDBA
+SQL> SQL> ID                              (TLLAVE) INTEGER Not Null 
+NOMBRE                          (TCADENAMEDIANA) VARCHAR(50) Nullable 
+PAGINA_WEB                      (TCADENALARGA) VARCHAR(255) Nullable 
+NOTAS                           (TCADENAGIGANTE) VARCHAR(1000) Nullable 
+CONSTRAINT PK_PROVEEDORES_BASE:
+  Primary key (ID)
+
+Triggers on Table PROVEEDORES_BASE:
+PROVEEDORES_BASE_BI, Sequence: 0, Type: BEFORE INSERT, Active
+SQL> 
+
+================================================================================
+TABLA: REPORTE_ABONO_SERVICIOS
+================================================================================
+
+Database:  C:\Program Files (x86)\AbarrotesMultiCaja\db\pdvdata.fdb, User: SYSDBA
+SQL> SQL> ID_TRANSACCION                  (TGUID) VARCHAR(38) Not Null 
+BANCO                           (TCADENAMEDIANA) VARCHAR(50) Nullable 
+CUENTA_ID                       (TCADENAMEDIANA) VARCHAR(50) Nullable 
+FOLIO                           (TCADENAMEDIANA) VARCHAR(50) Nullable 
+FOLIO_DE_PROVEEDOR              (TCADENAMEDIANA) VARCHAR(50) Nullable 
+FOLIO_CANCELACION               (TCADENAMEDIANA) VARCHAR(50) Nullable 
+MONTO                           (TMONEDA) BIGINT Not Null 
+ABONADO_EN                      (TFECHAHORA) TIMESTAMP Nullable 
+CANCELADO_EN                    (TFECHAHORA) TIMESTAMP Nullable 
+MENSAJE                         (TCADENALARGA) VARCHAR(255) Nullable 
+CUENTA_ORIGEN                   VARCHAR(50) Nullable 
+OTRA_INFORMACION                VARCHAR(1000) Nullable 
+METODO_DE_PAGO                  VARCHAR(100) Nullable 
+REPORTADO_PREVIAMENTE           (BOOLEAN) SMALLINT Nullable DEFAULT 0
+                                CHECK (value is null or value in (0, 1))
+CONSTRAINT PK_REPORTE_ABONO_SERVICIO:
+  Primary key (ID_TRANSACCION)
+SQL> 
+
+================================================================================
+TABLA: SCHEMA_DATA_INFO
+================================================================================
+
+Database:  C:\Program Files (x86)\AbarrotesMultiCaja\db\pdvdata.fdb, User: SYSDBA
+SQL> SQL> VERSION_MIGRACION_DATOS         INTEGER Nullable 
+SQL> 
+
+================================================================================
+TABLA: SCHEMA_INFO
+================================================================================
+
+Database:  C:\Program Files (x86)\AbarrotesMultiCaja\db\pdvdata.fdb, User: SYSDBA
+SQL> SQL> VERSION_DB                      INTEGER Nullable 
+SQL> 
+
+================================================================================
+TABLA: SINCRONIZACION_NUBE
+================================================================================
+
+Database:  C:\Program Files (x86)\AbarrotesMultiCaja\db\pdvdata.fdb, User: SYSDBA
+SQL> SQL> ID                              (TLLAVE) INTEGER Not Null 
+JSON                            BLOB segment 80, subtype BINARY Nullable DEFAULT NULL
+VENTA_ID                        (TLLAVE) INTEGER Nullable 
+TURNO_ID                        (TLLAVE) INTEGER Nullable 
+SEQUENCE_NUMBER                 (TCADENALARGA) VARCHAR(255) Nullable 
+CREADO_EN                       (TFECHAHORA) TIMESTAMP Nullable 
+SINCRONIZADO_EN                 (TFECHAHORA) TIMESTAMP Nullable 
+MENSAJE_ERROR                   (TCADENAMEDIANA) VARCHAR(50) Nullable 
+TIPO                            (TCADENAMEDIANA) VARCHAR(50) Nullable 
+LLAVE_ID                        INTEGER Nullable DEFAULT 0
+PRIORIDAD                       INTEGER Nullable DEFAULT 0
+CONSTRAINT PK_SINCRONIZACION_NUBE:
+  Primary key (ID)
+
+Triggers on Table SINCRONIZACION_NUBE:
+SINCRONIZACION_NUBE_BI, Sequence: 0, Type: BEFORE INSERT, Active
+SQL> 
+
+================================================================================
+TABLA: SINCRONIZACION_VENTAS
+================================================================================
+
+Database:  C:\Program Files (x86)\AbarrotesMultiCaja\db\pdvdata.fdb, User: SYSDBA
+SQL> SQL> VENTA_ID                        (TLLAVE) INTEGER Not Null 
+SINCRONIZADO_EN                 (TFECHAHORA) TIMESTAMP Nullable 
+MENSAJE_ERROR                   (TCADENAMEDIANA) VARCHAR(50) Nullable 
+CONSTRAINT PK_NUBE_DELTA:
+  Primary key (VENTA_ID)
+SQL> 
+
+================================================================================
+TABLA: TRANSACCIONES_PROSEPAGO
+================================================================================
+
+Database:  C:\Program Files (x86)\AbarrotesMultiCaja\db\pdvdata.fdb, User: SYSDBA
+SQL> SQL> ID                              (TLLAVE) INTEGER Not Null 
+VENTA_ID                        (TLLAVE) INTEGER Nullable 
+SOLICITUD_ID                    (TCADENAMEDIANA) VARCHAR(50) Nullable 
+CADENA                          (TCADENALARGA) VARCHAR(255) Nullable 
+FOLIO                           (TCADENAMEDIANA) VARCHAR(50) Nullable 
+STATUS                          (TCADENAMEDIANA) VARCHAR(50) Nullable 
+DESCRIPCION                     (TCADENAMEDIANA) VARCHAR(50) Nullable 
+CORTE                           (TCADENAMEDIANA) VARCHAR(50) Nullable 
+TARJETA                         (TCADENAMEDIANA) VARCHAR(50) Nullable 
+NOMBRE                          (TCADENALARGA) VARCHAR(255) Nullable 
+CORREO                          (TCADENALARGA) VARCHAR(255) Nullable 
+CONCEPTO                        (TCADENALARGA) VARCHAR(255) Nullable 
+REFERENCIA                      (TCADENALARGA) VARCHAR(255) Nullable 
+APROBACION                      (TCADENAMEDIANA) VARCHAR(50) Nullable 
+CAUSADENEGADA                   (TCADENALARGA) VARCHAR(255) Nullable 
+PARCIALIZACION                  (TCADENAMEDIANA) VARCHAR(50) Nullable 
+TIPOPLAN                        (TCADENAMEDIANA) VARCHAR(50) Nullable 
+DIFERIMIENTO                    (TCADENALARGA) VARCHAR(255) Nullable 
+IMPORTE                         (TCADENAMEDIANA) VARCHAR(50) Nullable 
+FECHA                           (TFECHAHORA) TIMESTAMP Nullable 
+ABONO_ID                        (TINTEGER) INTEGER Nullable DEFAULT 0
+
+Triggers on Table TRANSACCIONES_PROSEPAGO:
+TRANSACCIONES_PROSEPAGO_BI, Sequence: 0, Type: BEFORE INSERT, Active
+SQL> 
+
+================================================================================
+TABLA: TURNOS
+================================================================================
+
+Database:  C:\Program Files (x86)\AbarrotesMultiCaja\db\pdvdata.fdb, User: SYSDBA
+SQL> SQL> ID                              (TLLAVE) INTEGER Not Null 
+ID_CAJA                         (TLLAVE) INTEGER Not Null 
+ID_OPERACION_INICIO             (TLLAVE) INTEGER Not Null 
+ID_OPERACION_FIN                (TLLAVE) INTEGER Nullable 
+ID_CAJERO                       (TLLAVE) INTEGER Nullable 
+INICIO_EN                       (TFECHAHORA) TIMESTAMP Not Null 
+TERMINO_EN                      (TFECHAHORA) TIMESTAMP Nullable 
+DINERO_INICIAL                  (TCURRENCY) NUMERIC(18, 4) Not Null DEFAULT 0
+SOSPECHOSO                      CHAR(1) Not Null 
+ACUMULADO_VENTAS                (TCURRENCY) NUMERIC(18, 4) Not Null DEFAULT 0
+ACUMULADO_ENTRADAS              (TCURRENCY) NUMERIC(18, 4) Nullable DEFAULT 0
+ACUMULADO_SALIDAS               (TCURRENCY) NUMERIC(18, 4) Nullable DEFAULT 0
+ACUMULADO_GANANCIA              (TCURRENCY) NUMERIC(18, 4) Nullable DEFAULT 0
+VENTAS_EFECTIVO                 (TCURRENCY) NUMERIC(18, 4) Nullable DEFAULT 0
+VENTAS_TARJETA                  (TCURRENCY) NUMERIC(18, 4) Nullable DEFAULT 0
+VENTAS_VALES                    (TCURRENCY) NUMERIC(18, 4) Nullable DEFAULT 0
+VENTAS_CREDITO                  (TCURRENCY) NUMERIC(18, 4) Nullable DEFAULT 0
+EFECTIVO_AL_CIERRE              (TCURRENCY) NUMERIC(18, 4) Nullable DEFAULT 0
+ABONOS_EFECTIVO                 (TCURRENCY) NUMERIC(18, 4) Nullable DEFAULT 0
+DEVOLUCIONES_VENTAS_EFECTIVO    (TCURRENCY) NUMERIC(18, 4) Nullable DEFAULT 0
+DEVOLUCIONES_VENTAS_CREDITO     (TCURRENCY) NUMERIC(18, 4) Nullable DEFAULT 0
+DEVOLUCIONES_ABONOS_EFECTIVO    (TCURRENCY) NUMERIC(18, 4) Nullable DEFAULT 0
+NUMERO_VENTAS                   (TINTEGER) INTEGER Nullable DEFAULT 0
+DEVOLUCIONES_VENTAS_VALES       (TCURRENCY) NUMERIC(18, 4) Nullable DEFAULT 0
+ABONOS_TARJETA                  (TCURRENCY) NUMERIC(18, 4) Nullable DEFAULT 0
+ABONOS_VALES                    (TCURRENCY) NUMERIC(18, 4) Nullable DEFAULT 0
+COMISIONES_TARJETA              (TMONEDA) BIGINT Nullable DEFAULT 0
+SINCRONIZADO_EN                 (TFECHAHORA) TIMESTAMP Nullable 
+DEVOLUCIONES_VENTAS_TARJETA     NUMERIC(10, 4) Not Null DEFAULT 0.0000
+VENTAS_TRANSFERENCIA            NUMERIC(18, 4) Nullable DEFAULT 0
+ABONOS_TRANSFERENCIA            NUMERIC(18, 4) Nullable DEFAULT 0
+VENTAS_CHEQUE                   NUMERIC(18, 4) Nullable DEFAULT 0
+ABONOS_CHEQUE                   NUMERIC(18, 4) Nullable DEFAULT 0
+DEVOLUCIONES_VENTAS_TRANS       NUMERIC(18, 4) Nullable DEFAULT 0
+DEVOLUCIONES_VENTAS_CHEQUE      NUMERIC(18, 4) Nullable DEFAULT 0
+CONSTRAINT PK_TURNOS:
+  Primary key (ID)
+CONSTRAINT UNQ_TURNO_ABIERTO_CAJA:
+  Unique key (ID_CAJA, TERMINO_EN)
+
+Triggers on Table TURNOS:
+TURNOS_BI, Sequence: 0, Type: BEFORE INSERT, Active
+SQL> 
+
+================================================================================
+TABLA: USUARIOS
+================================================================================
+
+Database:  C:\Program Files (x86)\AbarrotesMultiCaja\db\pdvdata.fdb, User: SYSDBA
+SQL> SQL> ID                              (TLLAVE) INTEGER Not Null 
+NOMBRE_COMPLETO                 (TCADENALARGA) VARCHAR(255) Nullable 
+DIRECCION                       (TCADENALARGA) VARCHAR(255) Nullable 
+TELEFONO                        (TCADENAMEDIANA) VARCHAR(50) Nullable 
+USUARIO                         (TCADENAMEDIANA) VARCHAR(50) Not Null 
+CLAVE                           (TCADENAMEDIANA) VARCHAR(50) Not Null 
+PERMISOS                        (TPERMISOS) BLOB segment 80, subtype BINARY Nullable 
+CREATED_ON                      (TFECHAHORA) TIMESTAMP Nullable 
+CORREO                          (TCADENALARGA) VARCHAR(255) Nullable 
+ESTA_EN_CAJA_ID                 (TLLAVE) INTEGER Nullable 
+ELIMINADO_EN                    (TFECHAHORA) TIMESTAMP Nullable 
+CONSTRAINT PK_USUARIOS:
+  Primary key (ID)
+
+Triggers on Table USUARIOS:
+USUARIOS_BI, Sequence: 0, Type: BEFORE INSERT, Active
+SQL> 
+
+================================================================================
+TABLA: VENTATICKETS
+================================================================================
+
+Database:  C:\Program Files (x86)\AbarrotesMultiCaja\db\pdvdata.fdb, User: SYSDBA
+SQL> SQL> ID                              (TLLAVE) INTEGER Not Null 
+FOLIO                           (TFOLIO) INTEGER Nullable 
+CAJA_ID                         (TLLAVE) INTEGER Nullable 
+CAJERO_ID                       (TLLAVE) INTEGER Nullable 
+NOMBRE                          (TCADENAMEDIANA) VARCHAR(50) Nullable 
+CREADO_EN                       (TFECHAHORA) TIMESTAMP Nullable 
+SUBTOTAL                        (TMONEDA) BIGINT Nullable DEFAULT 0
+IMPUESTOS                       (TMONEDA) BIGINT Nullable DEFAULT 0
+TOTAL                           (TMONEDA) BIGINT Nullable DEFAULT 0
+GANANCIA                        (TMONEDA) BIGINT Nullable DEFAULT 0
+ESTA_ABIERTO                    (TBOOLEANO) CHAR(1) Nullable DEFAULT 't'
+CLIENTE_ID                      (TLLAVE) INTEGER Nullable 
+VENDIDO_EN                      (TFECHAHORA) TIMESTAMP Nullable 
+ES_MODIFICABLE                  (TBOOLEANO) CHAR(1) Nullable DEFAULT 't'
+PAGO_CON                        (TMONEDA) BIGINT Nullable 
+MONEDA                          (TCODIGOMONEDA) VARCHAR(3) Nullable 
+NUMERO_ARTICULOS                (TINTEGER) INTEGER Nullable DEFAULT 0
+PAGADO_EN                       (TFECHAHORA) TIMESTAMP Nullable 
+ESTA_CANCELADO                  (TBOOLEANO) CHAR(1) Nullable DEFAULT 'f'
+OPERACION_ID                    (TLLAVE) INTEGER Nullable 
+OLD_TICKET_ID                   (TLLAVE) INTEGER Nullable 
+NOTAS                           (TNOTA) BLOB segment 80, subtype BINARY Nullable 
+IMPRIMIR_NOTA                   (TBOOLEANO) CHAR(1) Nullable DEFAULT 't'
+FORMA_PAGO                      (TFORMAPAGO) CHAR(10) Nullable 
+REFERENCIA                      (TCADENALARGA) VARCHAR(255) Nullable 
+FACTURA_ID                      (TLLAVE) INTEGER Nullable 
+TOTAL_DEVUELTO                  (TMONEDA) BIGINT Not Null DEFAULT 0
+TOTAL_AHORRADO                  (TMONEDA) BIGINT Not Null DEFAULT 0
+TURNO_ID                        (TLLAVE) INTEGER Nullable 
+TIPO_DE_CAMBIO                  (TMONEDA) BIGINT Nullable DEFAULT 1
+TOTAL_CREDITO                   (TMONEDA) BIGINT Nullable DEFAULT 0
+NOTAS_AL_PIE                    (TNOTA) BLOB segment 80, subtype BINARY Nullable DEFAULT NULL
+REFRESCAR_TICKET                (TBOOLEANO) CHAR(1) Nullable DEFAULT 'F'
+TOTAL_FACTURABLE                (TMONEDA) BIGINT Not Null DEFAULT 0
+CLIENTESV2_ID                   INTEGER Not Null DEFAULT 1
+CLIENTESV2_CREDITO_ID           INTEGER Nullable 
+ACTIVO                          CHAR(1) Nullable DEFAULT 't'
+IMPRIMIR_DATOS_CLIENTE          CHAR(1) Nullable 
+SALDO_CREDITO                   (TMONEDA) BIGINT Not Null DEFAULT 0
+IMPUESTOS_RETENIDOS             (TMONEDA) BIGINT Not Null DEFAULT 0
+CONSTRAINT PK_VENTATICKETS:
+  Primary key (ID)
+
+Triggers on Table VENTATICKETS:
+VENTATICKETS_BI, Sequence: 0, Type: BEFORE INSERT, Active
+SQL> 
+
+================================================================================
+TABLA: VENTATICKETS_ARTICULOS
+================================================================================
+
+Database:  C:\Program Files (x86)\AbarrotesMultiCaja\db\pdvdata.fdb, User: SYSDBA
+SQL> SQL> ID                              (TLLAVE) INTEGER Not Null 
+TICKET_ID                       (TLLAVE) INTEGER Not Null 
+PRODUCTO_CODIGO                 (TCODIGOPRODUCTO) VARCHAR(20) Not Null 
+PRODUCTO_NOMBRE                 (TCADENALARGA) VARCHAR(255) Not Null 
+CANTIDAD                        (TCANTIDAD) FLOAT Not Null 
+GANANCIA                        (TMONEDA) BIGINT Nullable 
+DEPARTAMENTO_ID                 (TLLAVE) INTEGER Nullable 
+PAGADO_EN                       (TFECHAHORA) TIMESTAMP Nullable 
+USA_MAYOREO                     (TBOOLEANO) CHAR(1) Nullable DEFAULT 'f'
+PORCENTAJE_DESCUENTO            (TCANTIDAD) FLOAT Nullable 
+IMPUESTOS_USADOS                (TCADENALARGA) VARCHAR(255) Nullable 
+IMPUESTO_UNITARIO               (TMONEDA) BIGINT Nullable 
+PRECIO_USADO                    (TMONEDA) BIGINT Nullable 
+CANTIDAD_DEVUELTA               (TCANTIDAD) FLOAT Not Null DEFAULT 0
+FUE_DEVUELTO                    (TBOOLEANO) CHAR(1) Not Null DEFAULT 'f'
+PORCENTAJE_PAGADO               (TMONEDA_4_DECIMALES) INTEGER Nullable DEFAULT 0
+PRECIO_FINAL                    (TMONEDA) BIGINT Nullable DEFAULT 0
+AGREGADO_EN                     (TFECHAHORA) TIMESTAMP Nullable 
+TOTAL_ARTICULO                  (TMONEDA) BIGINT Nullable DEFAULT NULL
+CONSTRAINT PK_VENTATICKETS_ARTICULOS:
+  Primary key (ID)
+
+Triggers on Table VENTATICKETS_ARTICULOS:
+VENTATICKETS_ARTICULOS_BI, Sequence: 0, Type: BEFORE INSERT, Active
+TRG_BORRAR_ARTICULO, Sequence: 0, Type: BEFORE DELETE, Active
+SQL> 
+
+================================================================================
+TABLA: VENTATICKETS_ARTICULOS_BORRADOS
+================================================================================
+
+Database:  C:\Program Files (x86)\AbarrotesMultiCaja\db\pdvdata.fdb, User: SYSDBA
+SQL> SQL> ID                              INTEGER Nullable 
+TICKET_ID                       INTEGER Nullable 
+PRODUCTO_CODIGO                 VARCHAR(20) Nullable 
+PRODUCTO_NOMBRE                 VARCHAR(255) Nullable 
+CANTIDAD                        FLOAT Nullable 
+GANANCIA                        NUMERIC(15, 4) Nullable 
+DEPARTAMENTO_ID                 INTEGER Nullable 
+PAGADO_EN                       TIMESTAMP Nullable 
+USA_MAYOREO                     CHAR(1) Nullable 
+PORCENTAJE_DESCUENTO            FLOAT Nullable 
+IMPUESTOS_USADOS                VARCHAR(255) Nullable 
+IMPUESTO_UNITARIO               NUMERIC(15, 4) Nullable 
+PRECIO_USADO                    NUMERIC(15, 4) Nullable 
+CANTIDAD_DEVUELTA               FLOAT Nullable 
+FUE_DEVUELTO                    CHAR(1) Nullable 
+PORCENTAJE_PAGADO               INTEGER Nullable 
+PRECIO_FINAL                    NUMERIC(15, 4) Nullable 
+AGREGADO_EN                     TIMESTAMP Nullable 
+TOTAL_ARTICULO                  NUMERIC(15, 4) Nullable 
+ELIMINADO_EN                    TIMESTAMP Nullable DEFAULT CURRENT_TIMESTAMP
+
+
+USUARIO_ELIMINO                 VARCHAR(64) Nullable 
+TERMINAL_ELIMINO                VARCHAR(64) Nullable 
+SQL> 
+
+================================================================================
+TABLA: VENTATICKETS_IMPUESTOS
+================================================================================
+
+Database:  C:\Program Files (x86)\AbarrotesMultiCaja\db\pdvdata.fdb, User: SYSDBA
+SQL> SQL> ID                              (TLLAVE) INTEGER Not Null 
+VENTA_ID                        (TLLAVE) INTEGER Not Null 
+IMPUESTO_ID                     (TLLAVE) INTEGER Not Null 
+IMPUESTO_PORCENTAJE             (TMONEDA) BIGINT Not Null 
+IMPUESTO_BASE                   (TMONEDA) BIGINT Nullable DEFAULT 0
+IMPUESTO_MONTO                  (TMONEDA) BIGINT Nullable DEFAULT 0
+CONSTRAINT PK_VENTATICKETS_IMPUESTOS_ID:
+  Primary key (ID)
+
+Triggers on Table VENTATICKETS_IMPUESTOS:
+VENTATICKETS_IMPUESTOS_BI, Sequence: 0, Type: BEFORE INSERT, Active
+SQL> 
+
+================================================================================
+TABLA: VENTA_DE_RECARGAS
+================================================================================
+
+Database:  C:\Program Files (x86)\AbarrotesMultiCaja\db\pdvdata.fdb, User: SYSDBA
+SQL> SQL> ID                              (TLLAVE) INTEGER Not Null 
+CODIGO_ERROR                    (TCADENAMEDIANA) VARCHAR(50) Nullable 
+COMPANIA_RECARGAS               (TCADENAMEDIANA) VARCHAR(50) Not Null 
+ENVIADA_EL                      (TFECHAHORA) TIMESTAMP Not Null 
+CONFIRMADA_EL                   (TFECHAHORA) TIMESTAMP Nullable 
+ESTADO_DEL_PROVEEDOR            (TCADENAMEDIANA) VARCHAR(50) Nullable 
+NUMERO_TELEFONO                 (TCADENAMEDIANA) VARCHAR(50) Not Null 
+PROVEEDOR                       (TCADENAMEDIANA) VARCHAR(50) Not Null 
+PROVEEDOR_FOLIO                 (TCADENAMEDIANA) VARCHAR(50) Nullable 
+PROVEEDOR_NUMERO_ORDEN          (TCADENAMEDIANA) VARCHAR(50) Nullable 
+TRANSACCION_ID                  (TCADENAMEDIANA) VARCHAR(50) Nullable 
+TICKET_ID                       (TLLAVE) INTEGER Nullable 
+CONSTRAINT PK_VENTA_DE_RECARGAS:
+  Primary key (ID)
+
+Triggers on Table VENTA_DE_RECARGAS:
+VENTA_DE_RECARGAS_BI, Sequence: 0, Type: BEFORE INSERT, Active
+SQL> 
+
+================================================================================
+TABLA: VENTA_RECARGA
+================================================================================
+
+Database:  C:\Program Files (x86)\AbarrotesMultiCaja\db\pdvdata.fdb, User: SYSDBA
+SQL> SQL> ID                              (TLLAVE) INTEGER Not Null 
+CARRIER                         (TCADENAMEDIANA) VARCHAR(50) Not Null 
+ENVIADA_EN                      (TFECHAHORA) TIMESTAMP Not Null 
+MONTO                           (TSMALLINT) SMALLINT Not Null 
+NUMERO_TELEFONO                 VARCHAR(21) Not Null 
+TRANSACCION_ID                  (TNUMEROTRANSACCION) BIGINT Not Null 
+PROVEEDOR                       (TCADENAMEDIANA) VARCHAR(50) Not Null 
+AUTORIZACION                    (TCADENAMEDIANA) VARCHAR(50) Nullable 
+NO_ORDEN_PROVEEDOR              (TCADENAMEDIANA) VARCHAR(50) Nullable 
+VENTATICKET_ID                  (TLLAVE) INTEGER Nullable 
+RECIBIDA_EN                     (TFECHAHORA) TIMESTAMP Nullable 
+FUE_EXITOSA                     (TBOOLEANO) CHAR(1) Not Null DEFAULT 'F'
+MENSAJE_FALLA                   (TCADENALARGA) VARCHAR(255) Nullable 
+USUARIO                         (TCADENAMEDIANA) VARCHAR(50) Not Null DEFAULT 0
+CONSTRAINT PK_VENTA_RECARGA:
+  Primary key (ID)
+
+Triggers on Table VENTA_RECARGA:
+VENTA_RECARGA_BI, Sequence: 0, Type: BEFORE INSERT, Active
+SQL> 
+
+================================================================================
+TABLA: VENTA_SERVICIO
+================================================================================
+
+Database:  C:\Program Files (x86)\AbarrotesMultiCaja\db\pdvdata.fdb, User: SYSDBA
+SQL> SQL> ID                              (TLLAVE) INTEGER Not Null 
+ENVIADA_EN                      (TFECHAHORA) TIMESTAMP Not Null 
+CAJA_ID                         (TLLAVE) INTEGER Not Null 
+CAJERO_ID                       (TLLAVE) INTEGER Not Null 
+SUBTOTAL                        (TMONEDA) BIGINT Not Null 
+TOTAL                           (TMONEDA) BIGINT Not Null 
+COMISION                        (TMONEDA) BIGINT Not Null 
+TRANSACCION_ID                  (TCADENAMEDIANA) VARCHAR(50) Not Null 
+PROVEEDOR                       (TCADENAMEDIANA) VARCHAR(50) Not Null 
+USUARIO                         (TCADENAMEDIANA) VARCHAR(50) Nullable 
+NUMERO_DE_CONTRATO              (TCADENAMEDIANA) VARCHAR(50) Nullable 
+NOMBRE_SERVICIO                 (TCADENAMEDIANA) VARCHAR(50) Nullable 
+NO_ORDEN_PROVEEDOR              (TCADENAMEDIANA) VARCHAR(50) Nullable 
+VENTATICKET_ID                  (TLLAVE) INTEGER Nullable 
+RECIBIDA_EN                     (TFECHAHORA) TIMESTAMP Nullable 
+CANCELADA_EN                    (TFECHAHORA) TIMESTAMP Nullable 
+DATOS_CONCILIACION              (TDATOSCONCILIACION) VARCHAR(264) Nullable 
+IMPUESTO1TOTAL                  (TMONEDA) BIGINT Not Null 
+IMPUESTO2TOTAL                  (TMONEDA) BIGINT Not Null 
+CARGO_POR_SERVICIO              (TMONEDA) BIGINT Not Null 
+CONCILIADA                      (TBOOLEANO) CHAR(1) Not Null DEFAULT 'F'
+FUE_EXITOSA                     (TBOOLEANO) CHAR(1) Not Null DEFAULT 'F'
+MENSAJE_FALLA                   (TCADENALARGA) VARCHAR(255) Nullable 
+CONCILIADA_EN                   (TFECHAHORA) TIMESTAMP Nullable 
+TRANSACCION_ID_CANCELACION      (TCADENAMEDIANA) VARCHAR(50) Nullable 
+TURNO_ID                        (TLLAVE) INTEGER Nullable 
+REFERENCIAS                     (TCADENAGIGANTE) VARCHAR(1000) Nullable 
+QUEDO_PENDIENTE                 (TBOOLEANO) CHAR(1) Nullable DEFAULT 'F'
+FALLO_POSTERIORMENTE            (TBOOLEANO) CHAR(1) Nullable DEFAULT 'F'
+ERROR_CONCILIACION              (TLLAVE) INTEGER Nullable 
+PROVEEDOR_TRANSACCION_ID        INTEGER Nullable 
+AUTORIZACION_PROVEEDOR          VARCHAR(100) Nullable 
+CONSTRAINT PK_VENTA_SERVICIO:
+  Primary key (ID)
+
+Triggers on Table VENTA_SERVICIO:
+VENTA_SERVICIO_BI, Sequence: 0, Type: BEFORE INSERT, Active
+SQL> 
+
+================================================================================
+RELACIONES ENTRE TABLAS
+================================================================================
+
+INVENTARIO_APARTADO.PRODUCTO_ID  -->  PRODUCTOS.ID
+INVENTARIO_BALANCES.PRODUCTO_ID  -->  PRODUCTOS.ID
+INVENTARIO_BALANCES.ALMACEN_ID  -->  ALMACENES.ID
+INVENTARIO_HISTORIAL.PRODUCTO_ID  -->  PRODUCTOS.ID
+INVENTARIO_HISTORIAL.ALMACEN_ID  -->  ALMACENES.ID
+INVENTARIO_RECIBOS.ALMACEN_ID  -->  ALMACENES.ID
+INVENTARIO_RECIBOS_DETALLE.PRODUCTO_ID  -->  PRODUCTOS.ID
