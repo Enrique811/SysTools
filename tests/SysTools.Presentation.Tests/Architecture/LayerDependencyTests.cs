@@ -125,6 +125,40 @@ public sealed class LayerDependencyTests
         }
     }
 
+    [Fact]
+    public void Repository_contracts_and_entities_are_provider_independent_and_sql_is_read_only()
+    {
+        var root = FindRoot();
+        var providerIndependentDirectories = new[]
+        {
+            Path.Combine(root, "src", "Business", "Repositories"),
+            Path.Combine(root, "src", "Entities", "Products")
+        };
+        foreach (var directory in providerIndependentDirectories)
+        {
+            foreach (var file in EnumerateSourceAndProjectFiles(directory))
+            {
+                var content = File.ReadAllText(file);
+                Assert.DoesNotContain("FirebirdSql", content, StringComparison.Ordinal);
+                Assert.DoesNotContain("FbConnection", content, StringComparison.Ordinal);
+                Assert.DoesNotContain("SysTools.Data", content, StringComparison.Ordinal);
+            }
+        }
+
+        var repositories = Path.Combine(root, "src", "Data", "Repositories");
+        foreach (var file in Directory.EnumerateFiles(repositories, "*.cs", SearchOption.AllDirectories))
+        {
+            var content = File.ReadAllText(file);
+            Assert.DoesNotContain("INSERT ", content, StringComparison.OrdinalIgnoreCase);
+            Assert.DoesNotContain("UPDATE ", content, StringComparison.OrdinalIgnoreCase);
+            Assert.DoesNotContain("DELETE ", content, StringComparison.OrdinalIgnoreCase);
+            Assert.DoesNotContain("MERGE ", content, StringComparison.OrdinalIgnoreCase);
+            Assert.DoesNotContain("EXECUTE PROCEDURE", content, StringComparison.OrdinalIgnoreCase);
+            Assert.DoesNotContain("DateTime.Now", content, StringComparison.Ordinal);
+            Assert.DoesNotContain("DateTime.UtcNow", content, StringComparison.Ordinal);
+        }
+    }
+
     private static IEnumerable<string> EnumerateSourceAndProjectFiles(string directory) =>
         Directory.EnumerateFiles(directory, "*.*", SearchOption.AllDirectories)
             .Where(path => !path.Contains(

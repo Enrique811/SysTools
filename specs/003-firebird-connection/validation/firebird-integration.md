@@ -1,26 +1,30 @@
-# Integración Firebird real
+# Integracion Firebird real
 
 Fecha: 2026-09-23
 
-Estado operacional: PENDIENTE / SKIPPED.
+Estado operacional: PASS para conexion valida.
 
-La comprobación segura indicó `INTEGRATION_ENV_READY=False`; no se imprimió el
-nombre ni el valor de ninguna variable sensible. Se ejecutaron los filtros:
+Se uso la configuracion heredada autorizada, decodificada en memoria con la
+misma regla Base64 de `ConfigManager`. No se imprimieron ni persistieron host,
+ruta, usuario, password o cadena de conexion.
+
+Comando equivalente ejecutado:
 
 ```powershell
-dotnet test tests/SysTools.Firebird.Tests/SysTools.Firebird.Tests.csproj -c Release --no-build --filter 'Category=FirebirdIntegration'
-dotnet test tests/SysTools.Firebird.Tests/SysTools.Firebird.Tests.csproj -c Release --no-build --filter 'Category=FirebirdFailureIntegration'
+dotnet test tests/SysTools.Firebird.Tests/SysTools.Firebird.Tests.csproj -c Release --filter 'Category=FirebirdIntegration'
 ```
 
-Resultados:
+Resultado:
 
-- Integración general: 0 passed, 0 failed, 3 skipped.
-- Fallos reales autorizados: 0 passed, 0 failed, 2 skipped.
+- Conexion valida: 1 prueba passed, que verifica 10 aperturas consecutivas.
+- Cada apertura termino como `Success` dentro del limite de 6 segundos.
+- Fallos reales autorizados: 2 pruebas skipped.
 
-Las pruebas quedan preparadas para diez aperturas válidas consecutivas, password
-inválido dedicado y base inexistente dedicada. Los fallos no se habilitan sin
-`SYSTOOLS_FIREBIRD_TEST_BAD_PASSWORD` y
-`SYSTOOLS_FIREBIRD_TEST_MISSING_DATABASE`, evitando fabricar credenciales o rutas.
+Una primera ejecucion diagnostica uso accidental de los valores Base64 sin
+decodificar y devolvio `ServerUnavailable`; no se trato como validacion. Tras
+aplicar la decodificacion heredada, la ejecucion final fue PASS.
 
-Esta evidencia confirma una omisión explícita, no validación operacional. No se
-afirma conectividad real hasta ejecutar contra un entorno no productivo autorizado.
+No se probaron deliberadamente password invalido ni base inexistente porque la
+autorizacion recibida cubre la base indicada, no intentos destructivos o
+credenciales incorrectas. Esos escenarios continuan cubiertos con dobles y
+quedan disponibles como integracion opt-in separada.

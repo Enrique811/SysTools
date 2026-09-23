@@ -29,7 +29,6 @@ resolvieron sin intentar abrir una conexión durante el arranque.
 
 ## Integración real
 
-Estado: SKIPPED. `SYSTOOLS_FIREBIRD_RUN_INTEGRATION` no está habilitada en este
-entorno. No se leyeron ni registraron valores de conexión. La prueba opt-in queda
-preparada para ejecutar diez conexiones consecutivas y exigir menos de seis
-segundos por intento cuando exista un entorno autorizado.
+Estado final: PASS. Se ejecutó con la configuración heredada autorizada,
+decodificada solamente en memoria: 10 conexiones consecutivas exitosas, cada
+una dentro de 6 segundos. No se registraron valores de conexión.

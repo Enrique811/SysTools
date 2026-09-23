@@ -4,7 +4,7 @@
 
 **Created**: 2026-09-23
 
-**Status**: Implemented — operational validation pending
+**Status**: Implemented - successful connection operationally validated
 
 **Input**: User description: "Implementar conexión Firebird usando FirebirdSql.Data.FirebirdClient, con fábrica de conexiones, prueba de conectividad, timeout, logging de errores y compatibilidad con charset ISO8859_1 usado por el sistema Java. La conexión debe construirse desde la configuración local protegida y no debe exponer credenciales."
 
