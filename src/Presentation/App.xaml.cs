@@ -6,6 +6,8 @@ using Microsoft.Extensions.Hosting;
 using Serilog;
 using SysTools.Business.Configuration;
 using SysTools.Business.Connection;
+using SysTools.Business.Labels;
+using SysTools.Business.Products;
 using SysTools.Business.Repositories;
 using SysTools.Data.Configuration;
 using SysTools.Data.Connection;
@@ -62,6 +64,9 @@ public partial class App : Application
         services.AddSingleton<IConnectionTestService, ConnectionTestService>();
         services.AddSingleton<IProductRepository, FirebirdProductRepository>();
         services.AddSingleton<IServerClockRepository, FirebirdServerClockRepository>();
+        services.AddSingleton<IProductService, ProductService>();
+        services.AddSingleton<IPriceFormatterService, PriceFormatterService>();
+        services.AddSingleton<ILabelQueueService, LabelQueueService>();
         services.AddSingleton<IModuleInitializer, DefaultModuleInitializer>();
         services.AddSingleton<PriceVerifierViewModel>();
         services.AddSingleton<ShellViewModel>();
