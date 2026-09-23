@@ -4,6 +4,8 @@ using System.IO;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Serilog;
+using SysTools.Business.Configuration;
+using SysTools.Data.Configuration;
 using SysTools.Presentation.Modules.PriceVerifier.ViewModels;
 using SysTools.Presentation.Shell.Services;
 using SysTools.Presentation.Shell.ViewModels;
@@ -44,6 +46,12 @@ public partial class App : Application
 
     public static void ConfigureServices(IServiceCollection services)
     {
+        services.AddSingleton<ConfigurationValidator>();
+        services.AddSingleton<IConfigurationPathProvider, AppDataConfigurationPathProvider>();
+        services.AddSingleton<ISecretProtector, DpapiSecretProtector>();
+        services.AddSingleton<IAtomicFileWriter, AtomicFileWriter>();
+        services.AddSingleton<IConfigurationRepository, JsonConfigurationRepository>();
+        services.AddSingleton<IConfigurationService, ConfigurationService>();
         services.AddSingleton<IModuleInitializer, DefaultModuleInitializer>();
         services.AddSingleton<PriceVerifierViewModel>();
         services.AddSingleton<ShellViewModel>();

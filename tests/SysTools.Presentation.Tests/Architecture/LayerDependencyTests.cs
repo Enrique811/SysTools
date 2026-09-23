@@ -17,11 +17,43 @@ public sealed class LayerDependencyTests
     {
         var presentation = Path.Combine(FindRoot(), "src", "Presentation");
         var files = Directory.EnumerateFiles(presentation, "*.*", SearchOption.AllDirectories)
-            .Where(path => (path.Contains("ViewModels") || path.Contains($"{Path.DirectorySeparatorChar}Views{Path.DirectorySeparatorChar}"))
+            .Where(path => (path.Contains("ViewModels")
+                    || path.Contains($"{Path.DirectorySeparatorChar}Views{Path.DirectorySeparatorChar}")
+                    || path.Contains($"{Path.DirectorySeparatorChar}Commands{Path.DirectorySeparatorChar}"))
                 && (path.EndsWith(".cs") || path.EndsWith(".xaml")));
         foreach (var file in files)
         {
-            Assert.DoesNotContain("SysTools.Data", File.ReadAllText(file), StringComparison.Ordinal);
+            var content = File.ReadAllText(file);
+            Assert.DoesNotContain("SysTools.Data", content, StringComparison.Ordinal);
+            Assert.DoesNotContain("JsonConfigurationRepository", content, StringComparison.Ordinal);
+            Assert.DoesNotContain("ProtectedData", content, StringComparison.Ordinal);
+            Assert.DoesNotContain("System.IO", content, StringComparison.Ordinal);
+            Assert.DoesNotContain("File.", content, StringComparison.Ordinal);
+        }
+    }
+
+    [Fact]
+    public void Entities_sources_have_no_ui_infrastructure_or_serialization_dependencies()
+    {
+        var entities = Path.Combine(FindRoot(), "src", "Entities");
+        var forbidden = new[]
+        {
+            "SysTools.Business",
+            "SysTools.Data",
+            "SysTools.Presentation",
+            "System.Text.Json",
+            "System.Security.Cryptography",
+            "System.Windows",
+            "Microsoft.Extensions"
+        };
+
+        foreach (var file in Directory.EnumerateFiles(entities, "*.cs", SearchOption.AllDirectories))
+        {
+            var content = File.ReadAllText(file);
+            foreach (var value in forbidden)
+            {
+                Assert.DoesNotContain(value, content, StringComparison.Ordinal);
+            }
         }
     }
 
