@@ -126,6 +126,61 @@ public sealed class LayerDependencyTests
     }
 
     [Fact]
+    public void Views_and_view_models_do_not_perform_licensing_infrastructure_work()
+    {
+        var presentation = Path.Combine(FindRoot(), "src", "Presentation");
+        var files = EnumerateSourceAndProjectFiles(presentation)
+            .Where(path => path.Contains(
+                    $"{Path.DirectorySeparatorChar}Views{Path.DirectorySeparatorChar}")
+                || path.Contains(
+                    $"{Path.DirectorySeparatorChar}ViewModels{Path.DirectorySeparatorChar}"));
+        var forbidden = new[]
+        {
+            "System.Security.Cryptography",
+            "System.Diagnostics.Process",
+            "FileLicenseSourceReader",
+            "WindowsHardwareIdProvider",
+            "IServerClockRepository"
+        };
+
+        foreach (var file in files)
+        {
+            var content = File.ReadAllText(file);
+            foreach (var value in forbidden)
+            {
+                Assert.DoesNotContain(value, content, StringComparison.Ordinal);
+            }
+        }
+    }
+
+    [Fact]
+    public void Licensing_has_no_private_keys_local_clock_or_layer_violation()
+    {
+        var root = FindRoot();
+        var business = Path.Combine(root, "src", "Business", "Licensing");
+        var data = Path.Combine(root, "src", "Data", "Licensing");
+        foreach (var file in EnumerateSourceAndProjectFiles(business))
+        {
+            var content = File.ReadAllText(file);
+            Assert.DoesNotContain("SysTools.Data", content, StringComparison.Ordinal);
+            Assert.DoesNotContain("FirebirdSql", content, StringComparison.Ordinal);
+            Assert.DoesNotContain("DateTime.Now", content, StringComparison.Ordinal);
+            Assert.DoesNotContain("DateTime.UtcNow", content, StringComparison.Ordinal);
+            Assert.DoesNotContain("BEGIN PRIVATE KEY", content, StringComparison.Ordinal);
+            Assert.DoesNotContain("private.key", content, StringComparison.OrdinalIgnoreCase);
+        }
+
+        foreach (var file in EnumerateSourceAndProjectFiles(data))
+        {
+            var content = File.ReadAllText(file);
+            Assert.DoesNotContain("DateTime.Now", content, StringComparison.Ordinal);
+            Assert.DoesNotContain("DateTime.UtcNow", content, StringComparison.Ordinal);
+            Assert.DoesNotContain("BEGIN PRIVATE KEY", content, StringComparison.Ordinal);
+            Assert.DoesNotContain("private.key", content, StringComparison.OrdinalIgnoreCase);
+        }
+    }
+
+    [Fact]
     public void Repository_contracts_and_entities_are_provider_independent_and_sql_is_read_only()
     {
         var root = FindRoot();

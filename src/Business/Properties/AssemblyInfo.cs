@@ -1,4 +1,3 @@
 using System.Runtime.CompilerServices;
 
-[assembly: InternalsVisibleTo("SysTools.Repositories.Tests")]
 [assembly: InternalsVisibleTo("SysTools.Licensing.Tests")]
