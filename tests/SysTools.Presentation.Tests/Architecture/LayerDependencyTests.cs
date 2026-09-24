@@ -181,6 +181,38 @@ public sealed class LayerDependencyTests
     }
 
     [Fact]
+    public void Barcode_dependencies_are_confined_to_data_and_tests()
+    {
+        var root = FindRoot();
+        var providerIndependentDirectories = new[]
+        {
+            Path.Combine(root, "src", "Entities"),
+            Path.Combine(root, "src", "Business")
+        };
+
+        foreach (var directory in providerIndependentDirectories)
+        {
+            foreach (var file in EnumerateSourceAndProjectFiles(directory))
+            {
+                var content = File.ReadAllText(file);
+                Assert.DoesNotContain("ZXing", content, StringComparison.OrdinalIgnoreCase);
+                Assert.DoesNotContain("System.Drawing", content, StringComparison.OrdinalIgnoreCase);
+            }
+        }
+
+        var presentation = Path.Combine(root, "src", "Presentation");
+        foreach (var file in EnumerateSourceAndProjectFiles(presentation)
+            .Where(path => path.Contains("ViewModels")
+                || path.Contains($"{Path.DirectorySeparatorChar}Views{Path.DirectorySeparatorChar}")))
+        {
+            var content = File.ReadAllText(file);
+            Assert.DoesNotContain("BarcodeWriter", content, StringComparison.Ordinal);
+            Assert.DoesNotContain("BarcodeReader", content, StringComparison.Ordinal);
+            Assert.DoesNotContain("EncodePng", content, StringComparison.Ordinal);
+        }
+    }
+
+    [Fact]
     public void Repository_contracts_and_entities_are_provider_independent_and_sql_is_read_only()
     {
         var root = FindRoot();
