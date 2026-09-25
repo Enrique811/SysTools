@@ -5,6 +5,7 @@ using SysTools.Entities.Connection;
 using SysTools.Entities.Licensing;
 using SysTools.Entities.PriceVerifier;
 using SysTools.Presentation.Modules.PriceVerifier.ViewModels;
+using SysTools.Presentation.Modules.PriceVerifier.Search;
 using SysTools.Presentation.Shell.Services;
 using SysTools.Presentation.Shell.ViewModels;
 
@@ -22,8 +23,10 @@ internal static class TestDoubles
             "Informacion"))
     };
 
-    public static PriceVerifierViewModel CreatePriceVerifier(PriceVerifierWorkflowStub? workflow = null) =>
-        new(workflow ?? ReadyWorkflow(), NullLogger<PriceVerifierViewModel>.Instance);
+    public static PriceVerifierViewModel CreatePriceVerifier(
+        PriceVerifierWorkflowStub? workflow = null,
+        ProductSearchDialogServiceStub? searchDialog = null) =>
+        new(workflow ?? ReadyWorkflow(), searchDialog ?? new ProductSearchDialogServiceStub(), NullLogger<PriceVerifierViewModel>.Instance);
 
     public static ShellViewModel CreateShell(
         IModuleInitializer? initializer = null,
@@ -57,9 +60,14 @@ internal sealed class PriceVerifierWorkflowStub : IPriceVerifierWorkflow
         static (_, _) => Task.FromResult(new PriceVerifierLookupResult(
             PriceVerifierLookupStatus.NotFound,
             "Producto no encontrado."));
+    internal Func<string?, CancellationToken, Task<PriceVerifierSearchResult>> SearchHandler { get; set; } =
+        static (_, _) => Task.FromResult(new PriceVerifierSearchResult(
+            PriceVerifierSearchStatus.NoMatches,
+            "Sin resultados."));
 
     internal int PrepareCalls { get; private set; }
     internal int LookupCalls { get; private set; }
+    internal int SearchCalls { get; private set; }
     internal int InvalidateCalls { get; private set; }
 
     public Task<PriceVerifierPreparationResult> PrepareAsync(CancellationToken cancellationToken = default)
@@ -74,7 +82,29 @@ internal sealed class PriceVerifierWorkflowStub : IPriceVerifierWorkflow
         return LookupHandler(barcode, cancellationToken);
     }
 
+    public Task<PriceVerifierSearchResult> SearchAsync(string? descriptionPrefix, CancellationToken cancellationToken = default)
+    {
+        SearchCalls++;
+        return SearchHandler(descriptionPrefix, cancellationToken);
+    }
+
     public void Invalidate() => InvalidateCalls++;
+}
+
+internal sealed class ProductSearchDialogServiceStub : IProductSearchDialogService
+{
+    internal Func<CancellationToken, ProductSearchDialogResult> Handler { get; set; } =
+        static _ => ProductSearchDialogResult.Canceled();
+    internal int ShowCalls { get; private set; }
+    internal int CloseCalls { get; private set; }
+
+    public ProductSearchDialogResult ShowDialog(CancellationToken cancellationToken = default)
+    {
+        ShowCalls++;
+        return Handler(cancellationToken);
+    }
+
+    public void CloseActive() => CloseCalls++;
 }
 
 internal sealed record PresentationLog(

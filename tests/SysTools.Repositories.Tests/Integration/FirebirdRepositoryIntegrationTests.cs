@@ -175,11 +175,11 @@ public sealed class FirebirdRepositoryIntegrationTests
         command.CommandText = """
             SELECT A.ID
             FROM PRODUCTOS A
-            WHERE UPPER(A.DESCRIPCION) LIKE UPPER(@descriptionPrefix)
+            WHERE UPPER(A.DESCRIPCION) STARTING WITH UPPER(@descriptionPrefix)
             ORDER BY A.DESCRIPCION, A.ID
             """;
         command.CommandTimeout = 5;
-        AddTextParameter(command, "@descriptionPrefix", $"{prefix.Trim()}%", 256);
+        AddTextParameter(command, "@descriptionPrefix", prefix.Trim(), 255);
         await using var reader = await command.ExecuteReaderAsync();
         var ids = new List<int>();
         while (await reader.ReadAsync())

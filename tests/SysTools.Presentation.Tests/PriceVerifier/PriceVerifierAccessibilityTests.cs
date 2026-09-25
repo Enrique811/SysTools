@@ -18,6 +18,8 @@ public sealed class PriceVerifierAccessibilityTests
         Assert.Contains("UpdateSourceTrigger=PropertyChanged", xaml, StringComparison.Ordinal);
         Assert.Contains("AdditionalInformation, Mode=OneWay", xaml, StringComparison.Ordinal);
         Assert.Contains("Key=\"Enter\"", xaml, StringComparison.Ordinal);
+        Assert.Contains("Key=\"F7\" Modifiers=\"Control\"", xaml, StringComparison.Ordinal);
+        Assert.Contains("OpenSearchCommand", xaml, StringComparison.Ordinal);
         Assert.Contains("AutomationProperties.LiveSetting=\"Polite\"", xaml, StringComparison.Ordinal);
         Assert.Contains("SelectAll()", codeBehind, StringComparison.Ordinal);
         Assert.Contains("Dispatcher.BeginInvoke", codeBehind, StringComparison.Ordinal);

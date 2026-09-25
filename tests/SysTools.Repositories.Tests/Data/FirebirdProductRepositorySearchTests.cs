@@ -31,7 +31,7 @@ public sealed class FirebirdProductRepositorySearchTests
             product => Assert.Equal("Café americano", product.Description),
             product => Assert.Equal("Café molido", product.Description));
         Assert.Contains(
-            "UPPER(A.DESCRIPCION) LIKE UPPER(@descriptionPrefix)",
+            "UPPER(A.DESCRIPCION) STARTING WITH UPPER(@descriptionPrefix)",
             command.CommandText,
             StringComparison.OrdinalIgnoreCase);
         Assert.Contains(
@@ -41,8 +41,8 @@ public sealed class FirebirdProductRepositorySearchTests
         Assert.DoesNotContain("café", command.CommandText, StringComparison.OrdinalIgnoreCase);
         var parameter = Assert.Single(command.ParametersSnapshot);
         Assert.Equal("@descriptionPrefix", parameter.ParameterName);
-        Assert.Equal("café%", parameter.Value);
-        Assert.Equal(256, parameter.Size);
+        Assert.Equal("café", parameter.Value);
+        Assert.Equal(255, parameter.Size);
         Assert.Equal(5, command.CommandTimeout);
         Assert.Equal(1, reader.DisposeCalls);
         Assert.Equal(1, command.DisposeCalls);
@@ -71,5 +71,25 @@ public sealed class FirebirdProductRepositorySearchTests
         Assert.True(mutableView.IsReadOnly);
         Assert.Throws<NotSupportedException>(() => mutableView.Add(
             new Product(1, "1", "x", null, null, null)));
+    }
+
+    [Theory]
+    [InlineData("50%", "50%")]
+    [InlineData("A_B", "A_B")]
+    public async Task SearchByDescriptionAsync_preserves_literal_wildcard_symbols(string input, string expected)
+    {
+        var command = new TrackingDbCommand
+        {
+            ReaderBehavior = _ => Task.FromResult<DbDataReader>(
+                RepositoryRows.Products().CreateDataReader())
+        };
+        var repository = new FirebirdProductRepository(
+            new FakeRepositoryConnectionFactory(() => new TrackingDbConnection { CommandFactory = () => command }),
+            new RepositoryListLogger<FirebirdProductRepository>());
+
+        await repository.SearchByDescriptionAsync(RepositoryTestConfiguration.Valid(), input);
+
+        Assert.Equal(expected, Assert.Single(command.ParametersSnapshot).Value);
+        Assert.DoesNotContain(" LIKE ", command.CommandText, StringComparison.OrdinalIgnoreCase);
     }
 }

@@ -200,6 +200,80 @@ public sealed class PriceVerifierWorkflow : IPriceVerifierWorkflow
         }
     }
 
+    public async Task<PriceVerifierSearchResult> SearchAsync(
+        string? descriptionPrefix,
+        CancellationToken cancellationToken = default)
+    {
+        var stopwatch = Stopwatch.StartNew();
+        AppConfiguration? configuration;
+        long epoch;
+        lock (_sync)
+        {
+            configuration = _configuration;
+            epoch = _epoch;
+        }
+
+        if (configuration is null)
+        {
+            return LogSearch(SearchOperationalFailure(), stopwatch, "SessionUnavailable");
+        }
+
+        var normalized = descriptionPrefix?.Trim() ?? string.Empty;
+        if (normalized.Length == 0)
+        {
+            return LogSearch(new PriceVerifierSearchResult(
+                PriceVerifierSearchStatus.MissingInput,
+                "Ingrese el inicio de la descripcion."), stopwatch);
+        }
+
+        if (normalized.Length > 255)
+        {
+            return LogSearch(new PriceVerifierSearchResult(
+                PriceVerifierSearchStatus.InputTooLong,
+                "La descripcion no puede exceder 255 caracteres."), stopwatch);
+        }
+
+        try
+        {
+            var products = await _productService
+                .SearchByDescriptionAsync(configuration, normalized, cancellationToken)
+                .ConfigureAwait(false);
+            cancellationToken.ThrowIfCancellationRequested();
+            if (!IsCurrent(epoch))
+            {
+                return SearchOperationalFailure();
+            }
+
+            if (products.Count == 0)
+            {
+                return LogSearch(new PriceVerifierSearchResult(
+                    PriceVerifierSearchStatus.NoMatches,
+                    "No se encontraron productos."), stopwatch);
+            }
+
+            var items = products.Select(product => new PriceVerifierSearchItem(
+                product.Barcode,
+                product.Description,
+                product.PriceWithTax is decimal price
+                    ? _priceFormatter.Format(price, configuration.FormatoPrecio)
+                    : null,
+                product.Stock));
+            return LogSearch(new PriceVerifierSearchResult(
+                PriceVerifierSearchStatus.Success,
+                "Productos encontrados.",
+                items), stopwatch);
+        }
+        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+        {
+            throw;
+        }
+        catch (Exception)
+        {
+            ClearIfCurrent(epoch);
+            return LogSearch(SearchOperationalFailure(), stopwatch, "CatalogFailure");
+        }
+    }
+
     public void Invalidate()
     {
         lock (_sync)
@@ -256,6 +330,24 @@ public sealed class PriceVerifierWorkflow : IPriceVerifierWorkflow
             stopwatch.ElapsedMilliseconds);
         return result;
     }
+
+    private PriceVerifierSearchResult LogSearch(
+        PriceVerifierSearchResult result,
+        Stopwatch stopwatch,
+        string? category = null)
+    {
+        _logger.LogInformation(
+            "Price verifier operation completed at {Stage} with {Status}, {Category}, {DurationMs}",
+            "Search",
+            result.Status,
+            category ?? "Expected",
+            stopwatch.ElapsedMilliseconds);
+        return result;
+    }
+
+    private static PriceVerifierSearchResult SearchOperationalFailure() => new(
+        PriceVerifierSearchStatus.OperationalFailure,
+        "No fue posible consultar el catalogo. Reintente la preparacion.");
 
     private static PriceVerifierPreparationResult ConfigurationUnavailable() => new(
         PriceVerifierPreparationStatus.ConfigurationUnavailable,

@@ -2,6 +2,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using SysTools.Business.PriceVerifier;
 using SysTools.Presentation.Modules.PriceVerifier.ViewModels;
+using SysTools.Presentation.Modules.PriceVerifier.Search;
 using SysTools.Presentation.Shell.Models;
 using SysTools.Presentation.Shell.ViewModels;
 using SysTools.Presentation.Shell.Views;
@@ -29,6 +30,12 @@ public sealed class DependencyInjectionTests
         var viewModel = provider.GetRequiredService<PriceVerifierViewModel>();
         Assert.Same(viewModel, provider.GetRequiredService<PriceVerifierViewModel>());
         Assert.Same(viewModel, provider.GetRequiredService<ShellViewModel>().ActiveModuleContent);
+        Assert.Same(
+            provider.GetRequiredService<IProductSearchDialogService>(),
+            provider.GetRequiredService<IProductSearchDialogService>());
+        Assert.NotSame(
+            provider.GetRequiredService<ProductSearchViewModel>(),
+            provider.GetRequiredService<ProductSearchViewModel>());
     }
 
     [Fact]

@@ -15,7 +15,10 @@ public sealed class PriceVerifierSecurityTests
             "Encontrado.",
             new Product(1, "SECRET_BARCODE", "SECRET_DESCRIPTION", "Pieza", 1m, "1"),
             "$1.00"));
-        var vm = new SysTools.Presentation.Modules.PriceVerifier.ViewModels.PriceVerifierViewModel(workflow, logger)
+        var vm = new SysTools.Presentation.Modules.PriceVerifier.ViewModels.PriceVerifierViewModel(
+            workflow,
+            new ProductSearchDialogServiceStub(),
+            logger)
         {
             Barcode = "SECRET_BARCODE"
         };

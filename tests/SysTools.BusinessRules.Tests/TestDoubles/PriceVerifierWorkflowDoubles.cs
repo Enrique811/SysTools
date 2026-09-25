@@ -81,6 +81,10 @@ internal sealed class ProductServiceStub : IProductService
 
     internal int GetCalls { get; private set; }
     internal string? LastBarcode { get; private set; }
+    internal Func<AppConfiguration, string?, CancellationToken, Task<IReadOnlyList<Product>>> SearchHandler { get; set; } =
+        static (_, _, _) => Task.FromResult<IReadOnlyList<Product>>(Array.Empty<Product>());
+    internal int SearchCalls { get; private set; }
+    internal string? LastDescriptionPrefix { get; private set; }
 
     public Task<Product?> GetByBarcodeAsync(
         AppConfiguration configuration,
@@ -95,7 +99,12 @@ internal sealed class ProductServiceStub : IProductService
     public Task<IReadOnlyList<Product>> SearchByDescriptionAsync(
         AppConfiguration configuration,
         string? descriptionPrefix,
-        CancellationToken cancellationToken = default) => throw new NotSupportedException();
+        CancellationToken cancellationToken = default)
+    {
+        SearchCalls++;
+        LastDescriptionPrefix = descriptionPrefix;
+        return SearchHandler(configuration, descriptionPrefix, cancellationToken);
+    }
 }
 
 internal sealed class PriceFormatterServiceStub : IPriceFormatterService

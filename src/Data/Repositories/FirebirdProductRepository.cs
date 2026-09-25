@@ -96,7 +96,7 @@ public sealed class FirebirdProductRepository : IProductRepository
             await using var command = connection.CreateCommand();
             command.CommandText = $"""
                 {ProductSelect}
-                WHERE UPPER(A.DESCRIPCION) LIKE UPPER(@descriptionPrefix)
+                WHERE UPPER(A.DESCRIPCION) STARTING WITH UPPER(@descriptionPrefix)
                 ORDER BY A.DESCRIPCION, A.ID
                 """;
             command.CommandType = CommandType.Text;
@@ -104,8 +104,8 @@ public sealed class FirebirdProductRepository : IProductRepository
             AddTextParameter(
                 command,
                 "@descriptionPrefix",
-                $"{normalizedPrefix}%",
-                256);
+                normalizedPrefix,
+                255);
 
             await using var reader = await command.ExecuteReaderAsync(cancellationToken)
                 .ConfigureAwait(false);

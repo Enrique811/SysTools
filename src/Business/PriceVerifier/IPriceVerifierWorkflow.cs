@@ -11,6 +11,9 @@ public interface IPriceVerifierWorkflow
         string? barcode,
         CancellationToken cancellationToken = default);
 
+    Task<PriceVerifierSearchResult> SearchAsync(
+        string? descriptionPrefix,
+        CancellationToken cancellationToken = default);
+
     void Invalidate();
 }
-

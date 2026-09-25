@@ -18,6 +18,7 @@ using SysTools.Data.Connection;
 using SysTools.Data.Licensing;
 using SysTools.Data.Repositories;
 using SysTools.Presentation.Modules.PriceVerifier.ViewModels;
+using SysTools.Presentation.Modules.PriceVerifier.Search;
 using SysTools.Presentation.Shell.Services;
 using SysTools.Presentation.Shell.ViewModels;
 using SysTools.Presentation.Shell.Views;
@@ -79,6 +80,8 @@ public partial class App : Application
         services.AddSingleton<IBarcodeImageEncoder, ZxingBarcodeImageEncoder>();
         services.AddSingleton<IBarcodeService, BarcodeService>();
         services.AddSingleton<IPriceVerifierWorkflow, PriceVerifierWorkflow>();
+        services.AddTransient<ProductSearchViewModel>();
+        services.AddSingleton<IProductSearchDialogService, ProductSearchDialogService>();
         services.AddSingleton<IModuleInitializer, DefaultModuleInitializer>();
         services.AddSingleton<PriceVerifierViewModel>();
         services.AddSingleton<ShellViewModel>();

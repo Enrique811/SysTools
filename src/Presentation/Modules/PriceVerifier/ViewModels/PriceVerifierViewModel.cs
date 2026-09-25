@@ -2,6 +2,7 @@ using Microsoft.Extensions.Logging;
 using SysTools.Business.PriceVerifier;
 using SysTools.Entities.PriceVerifier;
 using SysTools.Presentation.Commands;
+using SysTools.Presentation.Modules.PriceVerifier.Search;
 using SysTools.Presentation.Shell.Models;
 using SysTools.Presentation.Shell.Services;
 using SysTools.Presentation.ViewModels;
@@ -12,6 +13,7 @@ public sealed class PriceVerifierViewModel : ViewModelBase, IAsyncModuleLifecycl
 {
     private const string Neutral = "—";
     private readonly IPriceVerifierWorkflow _workflow;
+    private readonly IProductSearchDialogService _searchDialog;
     private readonly ILogger<PriceVerifierViewModel> _logger;
     private CancellationTokenSource? _lifecycleCancellation;
     private long _generation;
@@ -23,6 +25,7 @@ public sealed class PriceVerifierViewModel : ViewModelBase, IAsyncModuleLifecycl
     private string _finalPriceDisplay = Neutral;
     private bool _isBusy;
     private bool _isReady;
+    private bool _isSearchOpen;
     private int _focusRequestVersion;
     private AvailabilityStatus _connectionStatus = AvailabilityStatus.Unavailable;
     private AvailabilityStatus _licenseStatus = AvailabilityStatus.Unavailable;
@@ -31,12 +34,15 @@ public sealed class PriceVerifierViewModel : ViewModelBase, IAsyncModuleLifecycl
 
     public PriceVerifierViewModel(
         IPriceVerifierWorkflow workflow,
+        IProductSearchDialogService searchDialog,
         ILogger<PriceVerifierViewModel> logger)
     {
         _workflow = workflow;
+        _searchDialog = searchDialog;
         _logger = logger;
         RetryCommand = new AsyncRelayCommand(PrepareForCurrentLifecycleAsync, () => CanRetry);
         SubmitBarcodeCommand = new AsyncRelayCommand(SubmitBarcodeAsync, () => IsBarcodeAvailable);
+        OpenSearchCommand = new AsyncRelayCommand(OpenSearchAsync, () => IsSearchAvailable);
     }
 
     public string ModuleTitle => "Verificador de precios";
@@ -80,7 +86,7 @@ public sealed class PriceVerifierViewModel : ViewModelBase, IAsyncModuleLifecycl
     public bool IsAvailable => _isReady && !IsBusy;
     public bool IsBarcodeAvailable => IsAvailable;
     public bool IsAdditionalInformationAvailable => AdditionalInformation.Length > 0;
-    public bool IsSearchAvailable => false;
+    public bool IsSearchAvailable => IsAvailable && !_isSearchOpen;
     public bool IsPrintAvailable => false;
     public bool IsSettingsAvailable => false;
     public bool CanRetry => !_isReady && !IsBusy;
@@ -99,6 +105,7 @@ public sealed class PriceVerifierViewModel : ViewModelBase, IAsyncModuleLifecycl
 
     public AsyncRelayCommand RetryCommand { get; }
     public AsyncRelayCommand SubmitBarcodeCommand { get; }
+    public AsyncRelayCommand OpenSearchCommand { get; }
 
     public async Task ActivateAsync(CancellationToken cancellationToken = default)
     {
@@ -115,6 +122,8 @@ public sealed class PriceVerifierViewModel : ViewModelBase, IAsyncModuleLifecycl
         _lifecycleCancellation?.Cancel();
         _lifecycleCancellation?.Dispose();
         _lifecycleCancellation = null;
+        _searchDialog.CloseActive();
+        _isSearchOpen = false;
         _workflow.Invalidate();
         _isReady = false;
         IsBusy = false;
@@ -196,6 +205,53 @@ public sealed class PriceVerifierViewModel : ViewModelBase, IAsyncModuleLifecycl
         }
     }
 
+    private async Task OpenSearchAsync()
+    {
+        var cancellationToken = _lifecycleCancellation?.Token ?? CancellationToken.None;
+        var generation = Volatile.Read(ref _generation);
+        if (!IsSearchAvailable || cancellationToken.IsCancellationRequested) return;
+
+        _isSearchOpen = true;
+        NotifyAvailabilityChanged();
+        ProductSearchDialogResult result;
+        try
+        {
+            result = _searchDialog.ShowDialog(cancellationToken);
+        }
+        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+        {
+            return;
+        }
+        finally
+        {
+            _isSearchOpen = false;
+            NotifyAvailabilityChanged();
+        }
+
+        if (!IsCurrent(generation, cancellationToken)) return;
+        if (result.Outcome == ProductSearchDialogOutcome.Selected)
+        {
+            Barcode = result.SelectedBarcode!;
+            await SubmitBarcodeAsync();
+        }
+        else if (result.Outcome == ProductSearchDialogOutcome.OperationalFailure)
+        {
+            _isReady = false;
+            ClearProduct();
+            ConnectionStatus = AvailabilityStatus.Error;
+            LicenseStatus = AvailabilityStatus.Unavailable;
+            StatusMessage = new OperationalMessage(
+                "No fue posible consultar el catalogo. Reintente la preparacion.",
+                MessageSeverity.Error);
+            NotifyStatusTextChanged();
+            NotifyAvailabilityChanged();
+        }
+        else
+        {
+            FocusRequestVersion++;
+        }
+    }
+
     private void PublishPreparation(PriceVerifierPreparationResult result)
     {
         _isReady = result.IsReady;
@@ -259,9 +315,11 @@ public sealed class PriceVerifierViewModel : ViewModelBase, IAsyncModuleLifecycl
     {
         OnPropertyChanged(nameof(IsAvailable));
         OnPropertyChanged(nameof(IsBarcodeAvailable));
+        OnPropertyChanged(nameof(IsSearchAvailable));
         OnPropertyChanged(nameof(CanRetry));
         RetryCommand.NotifyCanExecuteChanged();
         SubmitBarcodeCommand.NotifyCanExecuteChanged();
+        OpenSearchCommand.NotifyCanExecuteChanged();
     }
 
     private void NotifyStatusTextChanged()
