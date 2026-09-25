@@ -10,6 +10,8 @@ using SysTools.Presentation.Shell.Models;
 using SysTools.Presentation.Shell.ViewModels;
 using SysTools.Presentation.Shell.Views;
 using SysTools.Presentation.ViewModels;
+using SysTools.Business.Labels;
+using SysTools.Presentation.Modules.Labels;
 
 namespace SysTools.Presentation.Tests.Composition;
 
@@ -42,6 +44,11 @@ public sealed class DependencyInjectionTests
         Assert.NotSame(provider.GetRequiredService<IConfigurationEditorWorkflow>(), provider.GetRequiredService<IConfigurationEditorWorkflow>());
         Assert.NotSame(provider.GetRequiredService<ConfigurationViewModel>(), provider.GetRequiredService<ConfigurationViewModel>());
         Assert.Same(provider.GetRequiredService<IConfigurationDialogService>(), provider.GetRequiredService<IConfigurationDialogService>());
+        Assert.Same(provider.GetRequiredService<ILabelOutputWorkflow>(), provider.GetRequiredService<ILabelOutputWorkflow>());
+        Assert.Same(provider.GetRequiredService<ILabelTemplateProvider>(), provider.GetRequiredService<ILabelTemplateProvider>());
+        Assert.Same(provider.GetRequiredService<ILabelDocumentRenderer>(), provider.GetRequiredService<ILabelDocumentRenderer>());
+        Assert.Same(provider.GetRequiredService<ILabelPrinter>(), provider.GetRequiredService<ILabelPrinter>());
+        Assert.Same(provider.GetRequiredService<ILabelPreviewDialogService>(), provider.GetRequiredService<ILabelPreviewDialogService>());
     }
 
     [Fact]

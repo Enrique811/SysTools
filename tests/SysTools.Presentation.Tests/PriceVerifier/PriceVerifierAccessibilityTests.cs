@@ -20,6 +20,12 @@ public sealed class PriceVerifierAccessibilityTests
         Assert.Contains("Key=\"Enter\"", xaml, StringComparison.Ordinal);
         Assert.Contains("Key=\"F7\" Modifiers=\"Control\"", xaml, StringComparison.Ordinal);
         Assert.Contains("OpenSearchCommand", xaml, StringComparison.Ordinal);
+        Assert.Contains("Key=\"F8\" Modifiers=\"Control\"", xaml, StringComparison.Ordinal);
+        Assert.Contains("Key=\"F10\" Modifiers=\"Control\"", xaml, StringComparison.Ordinal);
+        Assert.Contains("CaptureLabelCommand", xaml, StringComparison.Ordinal);
+        Assert.Contains("CancelPendingLabelsCommand", xaml, StringComparison.Ordinal);
+        Assert.Contains("LabelProgressText", xaml, StringComparison.Ordinal);
+        Assert.Contains("Operación en curso", xaml, StringComparison.Ordinal);
         Assert.Contains("AutomationProperties.LiveSetting=\"Polite\"", xaml, StringComparison.Ordinal);
         Assert.Contains("SelectAll()", codeBehind, StringComparison.Ordinal);
         Assert.Contains("Dispatcher.BeginInvoke", codeBehind, StringComparison.Ordinal);

@@ -7,13 +7,15 @@
     <KeyBinding Key="Enter" Command="{Binding SubmitBarcodeCommand}" />
     <KeyBinding Key="F7" Modifiers="Control" Command="{Binding OpenSearchCommand}" />
     <KeyBinding Key="F9" Modifiers="Control" Command="{Binding OpenConfigurationCommand}" />
+    <KeyBinding Key="F8" Modifiers="Control" Command="{Binding CaptureLabelCommand}" />
+    <KeyBinding Key="F10" Modifiers="Control" Command="{Binding CancelPendingLabelsCommand}" />
   </UserControl.InputBindings>
   <Grid>
     <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="Auto"/><RowDefinition Height="Auto"/><RowDefinition Height="*"/></Grid.RowDefinitions>
     <Grid>
       <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
       <StackPanel><TextBlock Text="{Binding ModuleTitle}" FontSize="{DynamicResource TitleFontSize}" FontWeight="Bold"/><TextBlock Text="{Binding ModuleDescription}" Style="{DynamicResource MutedTextStyle}" Margin="0,5,0,0"/></StackPanel>
-      <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center"><Button Content="Buscar" Command="{Binding OpenSearchCommand}" IsEnabled="{Binding IsSearchAvailable}" Padding="16,7" automation:AutomationProperties.HelpText="Abrir búsqueda de productos (Ctrl+F7)"/><Button Content="Imprimir" Style="{DynamicResource PlaceholderButtonStyle}" IsEnabled="{Binding IsPrintAvailable}" IsTabStop="False"/><Button Content="Configuración" Command="{Binding OpenConfigurationCommand}" IsEnabled="{Binding IsSettingsAvailable}" Padding="16,7" automation:AutomationProperties.HelpText="Abrir configuración (Ctrl+F9)"/></StackPanel>
+      <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center"><Button Content="Buscar" Command="{Binding OpenSearchCommand}" IsEnabled="{Binding IsSearchAvailable}" Padding="16,7" automation:AutomationProperties.HelpText="Abrir búsqueda de productos (Ctrl+F7)"/><Button Content="Etiqueta" Command="{Binding CaptureLabelCommand}" IsEnabled="{Binding IsPrintAvailable}" Padding="16,7" automation:AutomationProperties.HelpText="Preparar etiqueta (Ctrl+F8)"/><Button Content="Cancelar fila" Command="{Binding CancelPendingLabelsCommand}" IsEnabled="{Binding CanCancelPendingLabels}" Padding="16,7" automation:AutomationProperties.HelpText="Cancelar etiquetas pendientes (Ctrl+F10)"/><Button Content="Configuración" Command="{Binding OpenConfigurationCommand}" IsEnabled="{Binding IsSettingsAvailable}" Padding="16,7" automation:AutomationProperties.HelpText="Abrir configuración (Ctrl+F9)"/></StackPanel>
     </Grid>
     <Border Grid.Row="1" Style="{DynamicResource CardBorderStyle}" Margin="0,20,0,12" Padding="18">
       <Grid>
@@ -30,12 +32,13 @@
     </Border>
     <Grid Grid.Row="2" Margin="0,0,0,12">
       <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
-      <TextBlock Text="{Binding StatusMessage.Text}" TextWrapping="Wrap" automation:AutomationProperties.Name="{Binding StatusMessage.AccessibilityLabel}" automation:AutomationProperties.LiveSetting="Polite"/>
+      <StackPanel><TextBlock Text="{Binding StatusMessage.Text}" TextWrapping="Wrap" automation:AutomationProperties.Name="{Binding StatusMessage.AccessibilityLabel}" automation:AutomationProperties.LiveSetting="Polite"/><TextBlock Text="{Binding LabelProgressText}" Margin="0,4,0,0" TextWrapping="Wrap" automation:AutomationProperties.LiveSetting="Polite"/></StackPanel>
       <StackPanel Grid.Column="1" Orientation="Horizontal">
         <ProgressBar Width="100" Height="8" IsIndeterminate="True" automation:AutomationProperties.Name="Operación en curso">
           <ProgressBar.Style><Style TargetType="ProgressBar"><Setter Property="Visibility" Value="Collapsed"/><Style.Triggers><DataTrigger Binding="{Binding IsBusy}" Value="True"><Setter Property="Visibility" Value="Visible"/></DataTrigger></Style.Triggers></Style></ProgressBar.Style>
         </ProgressBar>
-        <Button Content="Reintentar" Command="{Binding RetryCommand}" Margin="14,0,0,0" Padding="16,7"/>
+        <Button Content="Reintentar etiqueta" Command="{Binding RetryLabelOutputCommand}" IsEnabled="{Binding CanRetryLabelOutput}" Margin="14,0,0,0" Padding="16,7"/>
+        <Button Content="Reintentar módulo" Command="{Binding RetryCommand}" Margin="8,0,0,0" Padding="16,7"/>
       </StackPanel>
     </Grid>
     <Grid Grid.Row="3">

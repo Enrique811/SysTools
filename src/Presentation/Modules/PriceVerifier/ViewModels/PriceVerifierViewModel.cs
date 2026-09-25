@@ -1,9 +1,13 @@
 using Microsoft.Extensions.Logging;
 using SysTools.Business.PriceVerifier;
+using SysTools.Business.Labels;
+using SysTools.Entities.Labels;
 using SysTools.Entities.PriceVerifier;
+using SysTools.Entities.Products;
 using SysTools.Presentation.Commands;
 using SysTools.Presentation.Modules.PriceVerifier.Search;
 using SysTools.Presentation.Modules.Configuration.Services;
+using SysTools.Presentation.Modules.Labels;
 using SysTools.Presentation.Shell.Models;
 using SysTools.Presentation.Shell.Services;
 using SysTools.Presentation.ViewModels;
@@ -17,6 +21,8 @@ public sealed class PriceVerifierViewModel : ViewModelBase, IAsyncModuleLifecycl
     private readonly IProductSearchDialogService _searchDialog;
     private readonly ILogger<PriceVerifierViewModel> _logger;
     private readonly IConfigurationDialogService? _configurationDialog;
+    private readonly ILabelOutputWorkflow? _labelOutput;
+    private readonly ILabelPreviewDialogService? _labelPreview;
     private CancellationTokenSource? _lifecycleCancellation;
     private long _generation;
     private string _barcode = string.Empty;
@@ -29,6 +35,10 @@ public sealed class PriceVerifierViewModel : ViewModelBase, IAsyncModuleLifecycl
     private bool _isReady;
     private bool _isSearchOpen;
     private int _focusRequestVersion;
+    private Product? _currentProduct;
+    private string? _currentFormattedPrice;
+    private bool _currentProductCaptured, _hasPendingLabels, _canRetryLabelOutput;
+    private string _labelProgressText = "Sin etiquetas pendientes.";
     private AvailabilityStatus _connectionStatus = AvailabilityStatus.Unavailable;
     private AvailabilityStatus _licenseStatus = AvailabilityStatus.Unavailable;
     private OperationalMessage _statusMessage = new(
@@ -38,16 +48,23 @@ public sealed class PriceVerifierViewModel : ViewModelBase, IAsyncModuleLifecycl
         IPriceVerifierWorkflow workflow,
         IProductSearchDialogService searchDialog,
         ILogger<PriceVerifierViewModel> logger,
-        IConfigurationDialogService? configurationDialog = null)
+        IConfigurationDialogService? configurationDialog = null,
+        ILabelOutputWorkflow? labelOutput = null,
+        ILabelPreviewDialogService? labelPreview = null)
     {
         _workflow = workflow;
         _searchDialog = searchDialog;
         _logger = logger;
         _configurationDialog = configurationDialog;
+        _labelOutput = labelOutput;
+        _labelPreview = labelPreview;
         RetryCommand = new AsyncRelayCommand(PrepareForCurrentLifecycleAsync, () => CanRetry);
         SubmitBarcodeCommand = new AsyncRelayCommand(SubmitBarcodeAsync, () => IsBarcodeAvailable);
         OpenSearchCommand = new AsyncRelayCommand(OpenSearchAsync, () => IsSearchAvailable);
         OpenConfigurationCommand = new AsyncRelayCommand(OpenConfigurationAsync, () => IsSettingsAvailable);
+        CaptureLabelCommand = new AsyncRelayCommand(CaptureLabelAsync, () => IsPrintAvailable);
+        RetryLabelOutputCommand = new AsyncRelayCommand(RetryLabelOutputAsync, () => CanRetryLabelOutput);
+        CancelPendingLabelsCommand = new RelayCommand(_ => CancelPendingLabels(), _ => CanCancelPendingLabels);
     }
 
     public string ModuleTitle => "Verificador de precios";
@@ -92,7 +109,10 @@ public sealed class PriceVerifierViewModel : ViewModelBase, IAsyncModuleLifecycl
     public bool IsBarcodeAvailable => IsAvailable;
     public bool IsAdditionalInformationAvailable => AdditionalInformation.Length > 0;
     public bool IsSearchAvailable => IsAvailable && !_isSearchOpen;
-    public bool IsPrintAvailable => false;
+    public bool IsPrintAvailable => IsAvailable && _currentProduct is not null && !_currentProductCaptured && _labelOutput is not null;
+    public bool CanRetryLabelOutput => IsAvailable && _canRetryLabelOutput && _labelOutput is not null;
+    public bool CanCancelPendingLabels => !IsBusy && _hasPendingLabels && _labelOutput is not null;
+    public string LabelProgressText { get => _labelProgressText; private set => SetProperty(ref _labelProgressText, value); }
     public bool IsSettingsAvailable => !IsBusy && _configurationDialog is not null;
     public bool CanRetry => !_isReady && !IsBusy;
 
@@ -112,6 +132,9 @@ public sealed class PriceVerifierViewModel : ViewModelBase, IAsyncModuleLifecycl
     public AsyncRelayCommand SubmitBarcodeCommand { get; }
     public AsyncRelayCommand OpenSearchCommand { get; }
     public AsyncRelayCommand OpenConfigurationCommand { get; }
+    public AsyncRelayCommand CaptureLabelCommand { get; }
+    public AsyncRelayCommand RetryLabelOutputCommand { get; }
+    public RelayCommand CancelPendingLabelsCommand { get; }
 
     public async Task ActivateAsync(CancellationToken cancellationToken = default)
     {
@@ -129,7 +152,11 @@ public sealed class PriceVerifierViewModel : ViewModelBase, IAsyncModuleLifecycl
         _lifecycleCancellation?.Dispose();
         _lifecycleCancellation = null;
         _searchDialog.CloseActive();
+        _labelPreview?.CloseActive();
+        _labelOutput?.Invalidate();
         _isSearchOpen = false;
+        _hasPendingLabels = false;
+        _canRetryLabelOutput = false;
         _workflow.Invalidate();
         _isReady = false;
         IsBusy = false;
@@ -271,6 +298,77 @@ public sealed class PriceVerifierViewModel : ViewModelBase, IAsyncModuleLifecycl
         else if (!token.IsCancellationRequested) FocusRequestVersion++;
     }
 
+    private async Task CaptureLabelAsync()
+    {
+        if (!IsPrintAvailable || _labelOutput is null || _currentProduct is null || _currentFormattedPrice is null) return;
+        var token = _lifecycleCancellation?.Token ?? CancellationToken.None;
+        var generation = Volatile.Read(ref _generation);
+        IsBusy = true;
+        try
+        {
+            var result = await _labelOutput.CaptureAsync(_currentProduct, _currentFormattedPrice, token);
+            if (!IsCurrent(generation, token)) return;
+            if (result.Status is not (LabelOutputStatus.Busy or LabelOutputStatus.InvalidProduct or LabelOutputStatus.ConfigurationUnavailable))
+                _currentProductCaptured = true;
+            await PublishLabelOutputAsync(result, token);
+        }
+        catch (OperationCanceledException) when (token.IsCancellationRequested) { }
+        finally { if (generation == Volatile.Read(ref _generation)) { IsBusy = false; FocusRequestVersion++; } }
+    }
+
+    private async Task RetryLabelOutputAsync()
+    {
+        if (!CanRetryLabelOutput || _labelOutput is null) return;
+        var token = _lifecycleCancellation?.Token ?? CancellationToken.None;
+        var generation = Volatile.Read(ref _generation);
+        IsBusy = true;
+        try
+        {
+            var result = await _labelOutput.RetryAsync(token);
+            if (!IsCurrent(generation, token)) return;
+            await PublishLabelOutputAsync(result, token);
+        }
+        catch (OperationCanceledException) when (token.IsCancellationRequested) { }
+        finally { if (generation == Volatile.Read(ref _generation)) { IsBusy = false; FocusRequestVersion++; } }
+    }
+
+    private async Task PublishLabelOutputAsync(LabelOutputResult result, CancellationToken token)
+    {
+        _canRetryLabelOutput = result.CanRetry;
+        _hasPendingLabels = result.Status == LabelOutputStatus.Pending || result.CanRetry;
+        LabelProgressText = result.Status == LabelOutputStatus.Pending
+            ? $"Fila de etiquetas: {result.Pending}/{result.Capacity}; faltan {result.Remaining}."
+            : result.Message;
+        StatusMessage = new OperationalMessage(result.Message,
+            result.Status is LabelOutputStatus.Pending or LabelOutputStatus.PreviewReady or LabelOutputStatus.Printed
+                ? MessageSeverity.Information : MessageSeverity.Warning);
+        NotifyAvailabilityChanged();
+        if (result.Status == LabelOutputStatus.PreviewReady && result.Preview is not null && _labelPreview is not null)
+        {
+            await _labelPreview.ShowAsync(result.Preview, token);
+            _hasPendingLabels = false; _canRetryLabelOutput = false;
+            LabelProgressText = "Vista previa cerrada; fila completada.";
+            NotifyAvailabilityChanged();
+        }
+        else if (result.Status == LabelOutputStatus.Printed)
+        {
+            _hasPendingLabels = false; _canRetryLabelOutput = false;
+            NotifyAvailabilityChanged();
+        }
+    }
+
+    private void CancelPendingLabels()
+    {
+        if (_labelOutput is null || !CanCancelPendingLabels) return;
+        var result = _labelOutput.Cancel();
+        _hasPendingLabels = false; _canRetryLabelOutput = false;
+        LabelProgressText = result.HadCompletedRow
+            ? "Fila completada descartada."
+            : $"Etiquetas pendientes descartadas: {result.Discarded}.";
+        StatusMessage = new OperationalMessage(LabelProgressText, MessageSeverity.Information);
+        NotifyAvailabilityChanged(); FocusRequestVersion++;
+    }
+
     private void PublishPreparation(PriceVerifierPreparationResult result)
     {
         _isReady = result.IsReady;
@@ -296,11 +394,15 @@ public sealed class PriceVerifierViewModel : ViewModelBase, IAsyncModuleLifecycl
         if (result.Status == PriceVerifierLookupStatus.Success)
         {
             var product = result.Product!;
+            _currentProduct = product;
+            _currentFormattedPrice = result.FormattedPrice;
+            _currentProductCaptured = false;
             ProductDescription = Neutralize(product.Description);
             ProductPresentation = Neutralize(product.Presentation);
             StockDisplay = Neutralize(product.Stock);
             FinalPriceDisplay = Neutralize(result.FormattedPrice);
             StatusMessage = new OperationalMessage(result.Message, MessageSeverity.Information);
+            NotifyAvailabilityChanged();
             return;
         }
 
@@ -324,6 +426,9 @@ public sealed class PriceVerifierViewModel : ViewModelBase, IAsyncModuleLifecycl
 
     private void ClearProduct()
     {
+        _currentProduct = null;
+        _currentFormattedPrice = null;
+        _currentProductCaptured = false;
         ProductDescription = Neutral;
         ProductPresentation = Neutral;
         StockDisplay = Neutral;
@@ -337,10 +442,16 @@ public sealed class PriceVerifierViewModel : ViewModelBase, IAsyncModuleLifecycl
         OnPropertyChanged(nameof(IsSearchAvailable));
         OnPropertyChanged(nameof(CanRetry));
         OnPropertyChanged(nameof(IsSettingsAvailable));
+        OnPropertyChanged(nameof(IsPrintAvailable));
+        OnPropertyChanged(nameof(CanRetryLabelOutput));
+        OnPropertyChanged(nameof(CanCancelPendingLabels));
         RetryCommand.NotifyCanExecuteChanged();
         SubmitBarcodeCommand.NotifyCanExecuteChanged();
         OpenSearchCommand.NotifyCanExecuteChanged();
         OpenConfigurationCommand.NotifyCanExecuteChanged();
+        CaptureLabelCommand.NotifyCanExecuteChanged();
+        RetryLabelOutputCommand.NotifyCanExecuteChanged();
+        CancelPendingLabelsCommand.NotifyCanExecuteChanged();
     }
 
     private void NotifyStatusTextChanged()

@@ -17,7 +17,8 @@ public sealed class ManagedTemplateCatalog : ITemplateCatalog
         {
             if (!Directory.Exists(_root)) return new CatalogResult(CatalogStatus.Empty);
             var options = Directory.EnumerateFiles(_root, "*", SearchOption.TopDirectoryOnly)
-                .Where(path => Path.GetExtension(path).Equals(".frx", StringComparison.OrdinalIgnoreCase)
+                .Where(path => path.EndsWith(".label.json", StringComparison.OrdinalIgnoreCase)
+                    || Path.GetExtension(path).Equals(".frx", StringComparison.OrdinalIgnoreCase)
                     || Path.GetExtension(path).Equals(".jasper", StringComparison.OrdinalIgnoreCase))
                 .Select(Path.GetFileName)
                 .Where(name => !string.IsNullOrWhiteSpace(name))

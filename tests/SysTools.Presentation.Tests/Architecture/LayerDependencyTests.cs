@@ -286,6 +286,27 @@ public sealed class LayerDependencyTests
         }
     }
 
+    [Fact]
+    public void Label_presentation_and_business_keep_report_infrastructure_outside_their_boundaries()
+    {
+        var root = FindRoot();
+        var presentation = Path.Combine(root, "src", "Presentation", "Modules", "Labels");
+        var presentationForbidden = new[] { "System.IO.File", "Directory.", "System.Drawing", "System.Drawing.Printing", "PrinterSettings", "PrintDocument", "ZXing", "FastReport" };
+        foreach (var file in EnumerateSourceAndProjectFiles(presentation))
+        {
+            var content = File.ReadAllText(file);
+            foreach (var value in presentationForbidden) Assert.DoesNotContain(value, content, StringComparison.OrdinalIgnoreCase);
+        }
+
+        var business = Path.Combine(root, "src", "Business", "Labels");
+        var businessForbidden = new[] { "SysTools.Data", "System.Windows", "System.Drawing", "System.IO.File", "PrinterSettings", "PrintDocument", "ZXing", "FastReport" };
+        foreach (var file in EnumerateSourceAndProjectFiles(business))
+        {
+            var content = File.ReadAllText(file);
+            foreach (var value in businessForbidden) Assert.DoesNotContain(value, content, StringComparison.OrdinalIgnoreCase);
+        }
+    }
+
     private static IEnumerable<string> EnumerateSourceAndProjectFiles(string directory) =>
         Directory.EnumerateFiles(directory, "*.*", SearchOption.AllDirectories)
             .Where(path => !path.Contains(
