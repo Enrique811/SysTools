@@ -11,7 +11,9 @@ public enum ConfigurationIssueCode
     SecretUnavailable,
     StorageUnavailable,
     AccessDenied,
-    OperationCanceled
+    OperationCanceled,
+    ConnectionTestRequired,
+    LicenseValidationRequired
 }
 
 public enum ConfigurationIssueSeverity

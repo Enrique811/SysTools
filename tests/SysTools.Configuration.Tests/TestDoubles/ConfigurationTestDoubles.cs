@@ -77,6 +77,7 @@ internal sealed class FakeAtomicFileWriter : IAtomicFileWriter
 internal sealed class ListLogger<T> : ILogger<T>
 {
     public List<string> Messages { get; } = [];
+    public List<Exception?> Exceptions { get; } = [];
 
     public IDisposable? BeginScope<TState>(TState state) where TState : notnull => null;
 
@@ -90,6 +91,7 @@ internal sealed class ListLogger<T> : ILogger<T>
         Func<TState, Exception?, string> formatter)
     {
         Messages.Add(formatter(state, exception));
+        Exceptions.Add(exception);
     }
 }
 

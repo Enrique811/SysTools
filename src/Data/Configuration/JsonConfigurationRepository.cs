@@ -202,8 +202,8 @@ public sealed class JsonConfigurationRepository : IConfigurationRepository
 
     private void LogFailure(string operation, object outcome, Exception exception) =>
         _logger.LogError(
-            exception,
-            "ConfigurationOperationFailed Operation={Operation} Outcome={Outcome}",
+            "ConfigurationOperationFailed Operation={Operation} Outcome={Outcome} Category={Category}",
             operation,
-            outcome);
+            outcome,
+            exception.GetType().Name);
 }

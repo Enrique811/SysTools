@@ -3,6 +3,9 @@ using Microsoft.Extensions.Logging;
 using SysTools.Business.PriceVerifier;
 using SysTools.Presentation.Modules.PriceVerifier.ViewModels;
 using SysTools.Presentation.Modules.PriceVerifier.Search;
+using SysTools.Business.ConfigurationEditor;
+using SysTools.Presentation.Modules.Configuration;
+using SysTools.Presentation.Modules.Configuration.Services;
 using SysTools.Presentation.Shell.Models;
 using SysTools.Presentation.Shell.ViewModels;
 using SysTools.Presentation.Shell.Views;
@@ -36,6 +39,9 @@ public sealed class DependencyInjectionTests
         Assert.NotSame(
             provider.GetRequiredService<ProductSearchViewModel>(),
             provider.GetRequiredService<ProductSearchViewModel>());
+        Assert.NotSame(provider.GetRequiredService<IConfigurationEditorWorkflow>(), provider.GetRequiredService<IConfigurationEditorWorkflow>());
+        Assert.NotSame(provider.GetRequiredService<ConfigurationViewModel>(), provider.GetRequiredService<ConfigurationViewModel>());
+        Assert.Same(provider.GetRequiredService<IConfigurationDialogService>(), provider.GetRequiredService<IConfigurationDialogService>());
     }
 
     [Fact]

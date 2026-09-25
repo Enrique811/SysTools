@@ -3,6 +3,7 @@ using SysTools.Business.PriceVerifier;
 using SysTools.Entities.PriceVerifier;
 using SysTools.Presentation.Commands;
 using SysTools.Presentation.Modules.PriceVerifier.Search;
+using SysTools.Presentation.Modules.Configuration.Services;
 using SysTools.Presentation.Shell.Models;
 using SysTools.Presentation.Shell.Services;
 using SysTools.Presentation.ViewModels;
@@ -15,6 +16,7 @@ public sealed class PriceVerifierViewModel : ViewModelBase, IAsyncModuleLifecycl
     private readonly IPriceVerifierWorkflow _workflow;
     private readonly IProductSearchDialogService _searchDialog;
     private readonly ILogger<PriceVerifierViewModel> _logger;
+    private readonly IConfigurationDialogService? _configurationDialog;
     private CancellationTokenSource? _lifecycleCancellation;
     private long _generation;
     private string _barcode = string.Empty;
@@ -35,14 +37,17 @@ public sealed class PriceVerifierViewModel : ViewModelBase, IAsyncModuleLifecycl
     public PriceVerifierViewModel(
         IPriceVerifierWorkflow workflow,
         IProductSearchDialogService searchDialog,
-        ILogger<PriceVerifierViewModel> logger)
+        ILogger<PriceVerifierViewModel> logger,
+        IConfigurationDialogService? configurationDialog = null)
     {
         _workflow = workflow;
         _searchDialog = searchDialog;
         _logger = logger;
+        _configurationDialog = configurationDialog;
         RetryCommand = new AsyncRelayCommand(PrepareForCurrentLifecycleAsync, () => CanRetry);
         SubmitBarcodeCommand = new AsyncRelayCommand(SubmitBarcodeAsync, () => IsBarcodeAvailable);
         OpenSearchCommand = new AsyncRelayCommand(OpenSearchAsync, () => IsSearchAvailable);
+        OpenConfigurationCommand = new AsyncRelayCommand(OpenConfigurationAsync, () => IsSettingsAvailable);
     }
 
     public string ModuleTitle => "Verificador de precios";
@@ -88,7 +93,7 @@ public sealed class PriceVerifierViewModel : ViewModelBase, IAsyncModuleLifecycl
     public bool IsAdditionalInformationAvailable => AdditionalInformation.Length > 0;
     public bool IsSearchAvailable => IsAvailable && !_isSearchOpen;
     public bool IsPrintAvailable => false;
-    public bool IsSettingsAvailable => false;
+    public bool IsSettingsAvailable => !IsBusy && _configurationDialog is not null;
     public bool CanRetry => !_isReady && !IsBusy;
 
     public int FocusRequestVersion { get => _focusRequestVersion; private set => SetProperty(ref _focusRequestVersion, value); }
@@ -106,6 +111,7 @@ public sealed class PriceVerifierViewModel : ViewModelBase, IAsyncModuleLifecycl
     public AsyncRelayCommand RetryCommand { get; }
     public AsyncRelayCommand SubmitBarcodeCommand { get; }
     public AsyncRelayCommand OpenSearchCommand { get; }
+    public AsyncRelayCommand OpenConfigurationCommand { get; }
 
     public async Task ActivateAsync(CancellationToken cancellationToken = default)
     {
@@ -252,6 +258,19 @@ public sealed class PriceVerifierViewModel : ViewModelBase, IAsyncModuleLifecycl
         }
     }
 
+    private async Task OpenConfigurationAsync()
+    {
+        if (_configurationDialog is null || IsBusy) return;
+        var token = _lifecycleCancellation?.Token ?? CancellationToken.None;
+        var result = await _configurationDialog.ShowDialogAsync(ConfigurationDialogMode.Edit, token);
+        if (result.IsSaved && !token.IsCancellationRequested)
+        {
+            var generation = Interlocked.Increment(ref _generation);
+            await PrepareAsync(generation, token);
+        }
+        else if (!token.IsCancellationRequested) FocusRequestVersion++;
+    }
+
     private void PublishPreparation(PriceVerifierPreparationResult result)
     {
         _isReady = result.IsReady;
@@ -317,9 +336,11 @@ public sealed class PriceVerifierViewModel : ViewModelBase, IAsyncModuleLifecycl
         OnPropertyChanged(nameof(IsBarcodeAvailable));
         OnPropertyChanged(nameof(IsSearchAvailable));
         OnPropertyChanged(nameof(CanRetry));
+        OnPropertyChanged(nameof(IsSettingsAvailable));
         RetryCommand.NotifyCanExecuteChanged();
         SubmitBarcodeCommand.NotifyCanExecuteChanged();
         OpenSearchCommand.NotifyCanExecuteChanged();
+        OpenConfigurationCommand.NotifyCanExecuteChanged();
     }
 
     private void NotifyStatusTextChanged()

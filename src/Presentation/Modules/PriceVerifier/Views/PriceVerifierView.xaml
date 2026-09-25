@@ -6,13 +6,14 @@
   <UserControl.InputBindings>
     <KeyBinding Key="Enter" Command="{Binding SubmitBarcodeCommand}" />
     <KeyBinding Key="F7" Modifiers="Control" Command="{Binding OpenSearchCommand}" />
+    <KeyBinding Key="F9" Modifiers="Control" Command="{Binding OpenConfigurationCommand}" />
   </UserControl.InputBindings>
   <Grid>
     <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="Auto"/><RowDefinition Height="Auto"/><RowDefinition Height="*"/></Grid.RowDefinitions>
     <Grid>
       <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
       <StackPanel><TextBlock Text="{Binding ModuleTitle}" FontSize="{DynamicResource TitleFontSize}" FontWeight="Bold"/><TextBlock Text="{Binding ModuleDescription}" Style="{DynamicResource MutedTextStyle}" Margin="0,5,0,0"/></StackPanel>
-      <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center"><Button Content="Buscar" Command="{Binding OpenSearchCommand}" IsEnabled="{Binding IsSearchAvailable}" Padding="16,7" automation:AutomationProperties.HelpText="Abrir búsqueda de productos (Ctrl+F7)"/><Button Content="Imprimir" Style="{DynamicResource PlaceholderButtonStyle}" IsEnabled="{Binding IsPrintAvailable}" IsTabStop="False"/><Button Content="Configuración" Style="{DynamicResource PlaceholderButtonStyle}" IsEnabled="{Binding IsSettingsAvailable}" IsTabStop="False"/></StackPanel>
+      <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center"><Button Content="Buscar" Command="{Binding OpenSearchCommand}" IsEnabled="{Binding IsSearchAvailable}" Padding="16,7" automation:AutomationProperties.HelpText="Abrir búsqueda de productos (Ctrl+F7)"/><Button Content="Imprimir" Style="{DynamicResource PlaceholderButtonStyle}" IsEnabled="{Binding IsPrintAvailable}" IsTabStop="False"/><Button Content="Configuración" Command="{Binding OpenConfigurationCommand}" IsEnabled="{Binding IsSettingsAvailable}" Padding="16,7" automation:AutomationProperties.HelpText="Abrir configuración (Ctrl+F9)"/></StackPanel>
     </Grid>
     <Border Grid.Row="1" Style="{DynamicResource CardBorderStyle}" Margin="0,20,0,12" Padding="18">
       <Grid>

@@ -6,6 +6,7 @@ using SysTools.Presentation.Modules.PriceVerifier.ViewModels;
 using SysTools.Presentation.Shell.Models;
 using SysTools.Presentation.Shell.Services;
 using SysTools.Presentation.ViewModels;
+using SysTools.Presentation.Modules.Configuration.Services;
 
 namespace SysTools.Presentation.Shell.ViewModels;
 
@@ -15,15 +16,18 @@ public sealed class ShellViewModel : ViewModelBase
 
     private readonly ILogger<ShellViewModel> _logger;
     private readonly PriceVerifierViewModel _priceVerifier;
+    private readonly IConfigurationDialogService? _configurationDialog;
     private UtilityModuleItem _activeModule;
 
     public ShellViewModel(
         PriceVerifierViewModel priceVerifier,
         IModuleInitializer moduleInitializer,
-        ILogger<ShellViewModel> logger)
+        ILogger<ShellViewModel> logger,
+        IConfigurationDialogService? configurationDialog = null)
     {
         _logger = logger;
         _priceVerifier = priceVerifier;
+        _configurationDialog = configurationDialog;
         Modules = new ObservableCollection<UtilityModuleItem>(CreateInitialModules(priceVerifier));
         ValidateUniqueIds(Modules);
 
@@ -31,6 +35,7 @@ public sealed class ShellViewModel : ViewModelBase
         SelectModuleCommand = new RelayCommand(
             parameter => SelectModule(parameter as UtilityModuleItem),
             parameter => parameter is UtilityModuleItem module && module.IsEnabled);
+        OpenConfigurationCommand = new AsyncRelayCommand(OpenConfigurationAsync, () => _configurationDialog is not null);
 
         InitializeActiveModule(moduleInitializer);
         _priceVerifier.PropertyChanged += HandlePriceVerifierPropertyChanged;
@@ -44,7 +49,8 @@ public sealed class ShellViewModel : ViewModelBase
 
     public IEnumerable<UtilityModuleItem> UtilityModules => Modules.Where(x => x.Section == ModuleSection.Utilities);
 
-    public IEnumerable<UtilityModuleItem> AdministrationModules => Modules.Where(x => x.Section == ModuleSection.Administration);
+    public IEnumerable<UtilityModuleItem> AdministrationModules => Modules.Where(x =>
+        x.Section == ModuleSection.Administration && x.Id != "settings");
 
     public UtilityModuleItem ActiveModule
     {
@@ -72,6 +78,23 @@ public sealed class ShellViewModel : ViewModelBase
     public OperationalMessage StatusMessage => _priceVerifier.StatusMessage;
 
     public RelayCommand SelectModuleCommand { get; }
+    public AsyncRelayCommand OpenConfigurationCommand { get; }
+
+    public async Task EnsureInitialConfigurationAsync(CancellationToken cancellationToken = default)
+    {
+        if (_configurationDialog is null) return;
+        var result = await _configurationDialog.ShowIfRequiredAsync(cancellationToken);
+        if (result.IsSaved) await _priceVerifier.ActivateAsync(cancellationToken);
+    }
+
+    private async Task OpenConfigurationAsync()
+    {
+        if (_configurationDialog is null) return;
+        var result = await _configurationDialog.ShowDialogAsync(ConfigurationDialogMode.Edit);
+        if (result.IsSaved) await _priceVerifier.ActivateAsync();
+    }
+
+    public void CloseActiveDialogs() => _configurationDialog?.CloseActive();
 
     public bool RegisterModule(UtilityModuleItem module)
     {

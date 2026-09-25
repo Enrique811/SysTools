@@ -267,6 +267,25 @@ public sealed class LayerDependencyTests
         }
     }
 
+    [Fact]
+    public void Configuration_views_and_viewmodels_do_not_access_infrastructure_directly()
+    {
+        var root = FindRoot();
+        var presentation = Path.Combine(root, "src", "Presentation", "Modules", "Configuration");
+        foreach (var file in EnumerateSourceAndProjectFiles(presentation))
+        {
+            var content = File.ReadAllText(file);
+            Assert.DoesNotContain("System.IO", content, StringComparison.Ordinal);
+            Assert.DoesNotContain("File.", content, StringComparison.Ordinal);
+            Assert.DoesNotContain("Directory.", content, StringComparison.Ordinal);
+            Assert.DoesNotContain("FbConnection", content, StringComparison.Ordinal);
+            Assert.DoesNotContain("ISecretProtector", content, StringComparison.Ordinal);
+            Assert.DoesNotContain("ProtectedData", content, StringComparison.Ordinal);
+            Assert.DoesNotContain("PrinterSettings", content, StringComparison.Ordinal);
+            Assert.DoesNotContain("Process.Start", content, StringComparison.Ordinal);
+        }
+    }
+
     private static IEnumerable<string> EnumerateSourceAndProjectFiles(string directory) =>
         Directory.EnumerateFiles(directory, "*.*", SearchOption.AllDirectories)
             .Where(path => !path.Contains(

@@ -68,4 +68,27 @@ public sealed class ConfigurationLoggingTests
         Assert.DoesNotContain(password, logText, StringComparison.Ordinal);
         Assert.DoesNotContain(license, logText, StringComparison.Ordinal);
     }
+
+    [Fact]
+    [Trait("Category", "Security")]
+    public async Task Repository_failure_log_does_not_attach_exception_or_private_path()
+    {
+        using var temporary = new TemporaryDirectory();
+        var path = temporary.File("PRIVATE_CONFIGURATION.json");
+        await File.WriteAllTextAsync(path, "{invalid");
+        var logger = new ListLogger<JsonConfigurationRepository>();
+        var repository = new JsonConfigurationRepository(
+            new FakePathProvider(path),
+            new FakeSecretProtector(),
+            new AtomicFileWriter(),
+            logger);
+
+        var result = await repository.ReadAsync();
+        var logText = string.Join(Environment.NewLine, logger.Messages);
+
+        Assert.Equal(ConfigurationRepositoryReadStatus.InvalidContent, result.Status);
+        Assert.All(logger.Exceptions, Assert.Null);
+        Assert.DoesNotContain("PRIVATE_CONFIGURATION", logText, StringComparison.Ordinal);
+        Assert.Contains("JsonException", logText, StringComparison.Ordinal);
+    }
 }
