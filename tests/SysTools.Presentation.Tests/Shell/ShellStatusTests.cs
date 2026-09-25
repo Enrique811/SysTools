@@ -1,3 +1,6 @@
+using SysTools.Entities.Connection;
+using SysTools.Entities.Licensing;
+using SysTools.Entities.PriceVerifier;
 using SysTools.Presentation.Shell.Models;
 
 namespace SysTools.Presentation.Tests.Shell;
@@ -5,21 +8,28 @@ namespace SysTools.Presentation.Tests.Shell;
 public sealed class ShellStatusTests
 {
     [Fact]
-    public void Starts_with_neutral_operational_status()
+    public async Task Shell_proxies_module_status_without_divergent_copies()
     {
-        var shell = TestDoubles.CreateShell();
-        Assert.Equal(AvailabilityStatus.Unavailable, shell.ConnectionStatus);
-        Assert.Equal(AvailabilityStatus.Unavailable, shell.LicenseStatus);
-        Assert.Equal("Módulo en preparación", shell.StatusMessage.Text);
-    }
+        var workflow = TestDoubles.ReadyWorkflow();
+        var vm = TestDoubles.CreatePriceVerifier(workflow);
+        var shell = TestDoubles.CreateShell(priceVerifier: vm);
 
-    [Fact]
-    public void Recoverable_failure_keeps_module_and_hides_diagnostics()
-    {
-        var shell = TestDoubles.CreateShell(new ThrowingInitializer());
-        Assert.Equal("price-verifier", shell.ActiveModule.Id);
-        Assert.DoesNotContain("InvalidOperationException", shell.StatusMessage.Text);
-        Assert.DoesNotContain("C:\\", shell.StatusMessage.Text);
-        Assert.Equal(MessageSeverity.Error, shell.StatusMessage.Severity);
+        await vm.ActivateAsync();
+
+        Assert.Equal(AvailabilityStatus.Available, shell.ConnectionStatus);
+        Assert.Equal(AvailabilityStatus.Available, shell.LicenseStatus);
+        Assert.Equal(vm.StatusMessage, shell.StatusMessage);
+
+        workflow.PrepareHandler = _ => Task.FromResult(new PriceVerifierPreparationResult(
+            PriceVerifierPreparationStatus.LicenseUnavailable,
+            "Licencia no disponible.",
+            ConnectionTestStatus.Success,
+            LicenseValidationStatus.Expired));
+        vm.Deactivate();
+        await vm.RetryCommand.ExecuteAsync();
+
+        Assert.Equal(AvailabilityStatus.Available, shell.ConnectionStatus);
+        Assert.Equal(AvailabilityStatus.Error, shell.LicenseStatus);
+        Assert.Same(vm.StatusMessage, shell.StatusMessage);
     }
 }

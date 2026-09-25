@@ -6,6 +6,46 @@ namespace SysTools.Presentation.Tests.Mvvm;
 public sealed class MvvmInfrastructureTests
 {
     [Fact]
+    public async Task Async_command_is_awaitable_single_flight_and_notifies_at_boundaries()
+    {
+        var operation = new ControlledOperation<bool>();
+        var calls = 0;
+        var notifications = 0;
+        var command = new AsyncRelayCommand(async () =>
+        {
+            calls++;
+            await operation.Task;
+        });
+        command.CanExecuteChanged += (_, _) => notifications++;
+
+        var first = command.ExecuteAsync();
+        var ignored = command.ExecuteAsync();
+        Assert.False(command.CanExecute(null));
+        Assert.Equal(1, calls);
+        Assert.True(ignored.IsCompletedSuccessfully);
+
+        operation.Complete(true);
+        await first;
+
+        Assert.True(command.CanExecute(null));
+        Assert.Equal(2, notifications);
+    }
+
+    [Fact]
+    public async Task Async_command_honors_availability_and_awaitable_path_propagates_failure()
+    {
+        var available = false;
+        var command = new AsyncRelayCommand(
+            () => throw new InvalidOperationException("controlled"),
+            () => available);
+
+        await command.ExecuteAsync();
+        available = true;
+        command.NotifyCanExecuteChanged();
+        await Assert.ThrowsAsync<InvalidOperationException>(command.ExecuteAsync);
+    }
+
+    [Fact]
     public void Relay_command_honors_availability_executes_and_notifies()
     {
         var executed = false;

@@ -10,6 +10,7 @@ using SysTools.Business.Connection;
 using SysTools.Business.Labels;
 using SysTools.Business.Licensing;
 using SysTools.Business.Products;
+using SysTools.Business.PriceVerifier;
 using SysTools.Business.Repositories;
 using SysTools.Data.Configuration;
 using SysTools.Data.Barcodes;
@@ -77,6 +78,7 @@ public partial class App : Application
         services.AddSingleton<ILicenseService, LicenseService>();
         services.AddSingleton<IBarcodeImageEncoder, ZxingBarcodeImageEncoder>();
         services.AddSingleton<IBarcodeService, BarcodeService>();
+        services.AddSingleton<IPriceVerifierWorkflow, PriceVerifierWorkflow>();
         services.AddSingleton<IModuleInitializer, DefaultModuleInitializer>();
         services.AddSingleton<PriceVerifierViewModel>();
         services.AddSingleton<ShellViewModel>();

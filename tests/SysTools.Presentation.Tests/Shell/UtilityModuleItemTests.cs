@@ -10,7 +10,7 @@ public sealed class UtilityModuleItemTests
     [InlineData("PriceVerifier")]
     [InlineData("price_verifier")]
     public void Id_must_be_nonempty_kebab_case(string id) =>
-        Assert.ThrowsAny<ArgumentException>(() => new UtilityModuleItem(id, "Módulo", ModuleSection.Utilities, true, new PriceVerifierViewModel()));
+        Assert.ThrowsAny<ArgumentException>(() => new UtilityModuleItem(id, "Módulo", ModuleSection.Utilities, true, TestDoubles.CreatePriceVerifier()));
 
     [Fact]
     public void Enabled_module_requires_content() => Assert.Throws<ArgumentException>(() => new UtilityModuleItem("valid-id", "Módulo", ModuleSection.Utilities, true));

@@ -1,5 +1,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using SysTools.Business.PriceVerifier;
+using SysTools.Presentation.Modules.PriceVerifier.ViewModels;
 using SysTools.Presentation.Shell.Models;
 using SysTools.Presentation.Shell.ViewModels;
 using SysTools.Presentation.Shell.Views;
@@ -9,6 +11,26 @@ namespace SysTools.Presentation.Tests.Composition;
 
 public sealed class DependencyInjectionTests
 {
+    [Fact]
+    public void Composition_validates_and_uses_single_workflow_and_view_model_instances()
+    {
+        var services = new ServiceCollection();
+        services.AddLogging(builder => builder.ClearProviders());
+        App.ConfigureServices(services);
+        using var provider = services.BuildServiceProvider(new ServiceProviderOptions
+        {
+            ValidateOnBuild = true,
+            ValidateScopes = true
+        });
+
+        Assert.Same(
+            provider.GetRequiredService<IPriceVerifierWorkflow>(),
+            provider.GetRequiredService<IPriceVerifierWorkflow>());
+        var viewModel = provider.GetRequiredService<PriceVerifierViewModel>();
+        Assert.Same(viewModel, provider.GetRequiredService<PriceVerifierViewModel>());
+        Assert.Same(viewModel, provider.GetRequiredService<ShellViewModel>().ActiveModuleContent);
+    }
+
     [Fact]
     public void Composition_resolves_shell_and_accepts_demo_module_without_external_services()
     {

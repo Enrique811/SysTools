@@ -1,32 +1,281 @@
+using Microsoft.Extensions.Logging;
+using SysTools.Business.PriceVerifier;
+using SysTools.Entities.PriceVerifier;
+using SysTools.Presentation.Commands;
+using SysTools.Presentation.Shell.Models;
+using SysTools.Presentation.Shell.Services;
 using SysTools.Presentation.ViewModels;
 
 namespace SysTools.Presentation.Modules.PriceVerifier.ViewModels;
 
-public sealed class PriceVerifierViewModel : ViewModelBase
+public sealed class PriceVerifierViewModel : ViewModelBase, IAsyncModuleLifecycle
 {
+    private const string Neutral = "—";
+    private readonly IPriceVerifierWorkflow _workflow;
+    private readonly ILogger<PriceVerifierViewModel> _logger;
+    private CancellationTokenSource? _lifecycleCancellation;
+    private long _generation;
+    private string _barcode = string.Empty;
+    private string _additionalInformation = string.Empty;
+    private string _productDescription = Neutral;
+    private string _productPresentation = Neutral;
+    private string _stockDisplay = Neutral;
+    private string _finalPriceDisplay = Neutral;
+    private bool _isBusy;
+    private bool _isReady;
+    private int _focusRequestVersion;
+    private AvailabilityStatus _connectionStatus = AvailabilityStatus.Unavailable;
+    private AvailabilityStatus _licenseStatus = AvailabilityStatus.Unavailable;
+    private OperationalMessage _statusMessage = new(
+        "Módulo pendiente de preparación.", MessageSeverity.Information);
+
+    public PriceVerifierViewModel(
+        IPriceVerifierWorkflow workflow,
+        ILogger<PriceVerifierViewModel> logger)
+    {
+        _workflow = workflow;
+        _logger = logger;
+        RetryCommand = new AsyncRelayCommand(PrepareForCurrentLifecycleAsync, () => CanRetry);
+        SubmitBarcodeCommand = new AsyncRelayCommand(SubmitBarcodeAsync, () => IsBarcodeAvailable);
+    }
+
     public string ModuleTitle => "Verificador de precios";
+    public string ModuleDescription => "Consulte descripción, presentación, existencia y precio por código de barras.";
 
-    public string ModuleDescription => "Estructura inicial del módulo. Las consultas y acciones se habilitarán en features posteriores.";
+    public string Barcode
+    {
+        get => _barcode;
+        set => SetProperty(ref _barcode, value ?? string.Empty);
+    }
 
-    public string Barcode => string.Empty;
+    public string AdditionalInformation
+    {
+        get => _additionalInformation;
+        private set
+        {
+            if (SetProperty(ref _additionalInformation, value))
+            {
+                OnPropertyChanged(nameof(IsAdditionalInformationAvailable));
+            }
+        }
+    }
 
-    public string AdditionalInformation => string.Empty;
+    public string ProductDescription { get => _productDescription; private set => SetProperty(ref _productDescription, value); }
+    public string ProductPresentation { get => _productPresentation; private set => SetProperty(ref _productPresentation, value); }
+    public string StockDisplay { get => _stockDisplay; private set => SetProperty(ref _stockDisplay, value); }
+    public string FinalPriceDisplay { get => _finalPriceDisplay; private set => SetProperty(ref _finalPriceDisplay, value); }
 
-    public string ProductDescription => "—";
+    public bool IsBusy
+    {
+        get => _isBusy;
+        private set
+        {
+            if (SetProperty(ref _isBusy, value))
+            {
+                NotifyAvailabilityChanged();
+            }
+        }
+    }
 
-    public string ProductPresentation => "—";
-
-    public string StockDisplay => "—";
-
-    public string FinalPriceDisplay => "—";
-
-    public bool IsBarcodeAvailable => false;
-
-    public bool IsAdditionalInformationAvailable => false;
-
+    public bool IsAvailable => _isReady && !IsBusy;
+    public bool IsBarcodeAvailable => IsAvailable;
+    public bool IsAdditionalInformationAvailable => AdditionalInformation.Length > 0;
     public bool IsSearchAvailable => false;
-
     public bool IsPrintAvailable => false;
-
     public bool IsSettingsAvailable => false;
+    public bool CanRetry => !_isReady && !IsBusy;
+
+    public int FocusRequestVersion { get => _focusRequestVersion; private set => SetProperty(ref _focusRequestVersion, value); }
+    public AvailabilityStatus ConnectionStatus { get => _connectionStatus; private set => SetProperty(ref _connectionStatus, value); }
+    public AvailabilityStatus LicenseStatus { get => _licenseStatus; private set => SetProperty(ref _licenseStatus, value); }
+    public string ConnectionStatusText => $"Conexión: {AvailabilityText(ConnectionStatus)}";
+    public string LicenseStatusText => $"Licencia: {AvailabilityText(LicenseStatus)}";
+
+    public OperationalMessage StatusMessage
+    {
+        get => _statusMessage;
+        private set => SetProperty(ref _statusMessage, value);
+    }
+
+    public AsyncRelayCommand RetryCommand { get; }
+    public AsyncRelayCommand SubmitBarcodeCommand { get; }
+
+    public async Task ActivateAsync(CancellationToken cancellationToken = default)
+    {
+        _lifecycleCancellation?.Cancel();
+        _lifecycleCancellation?.Dispose();
+        _lifecycleCancellation = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+        var generation = Interlocked.Increment(ref _generation);
+        await PrepareAsync(generation, _lifecycleCancellation.Token);
+    }
+
+    public void Deactivate()
+    {
+        Interlocked.Increment(ref _generation);
+        _lifecycleCancellation?.Cancel();
+        _lifecycleCancellation?.Dispose();
+        _lifecycleCancellation = null;
+        _workflow.Invalidate();
+        _isReady = false;
+        IsBusy = false;
+        ClearProduct();
+        AdditionalInformation = string.Empty;
+        ConnectionStatus = AvailabilityStatus.Unavailable;
+        LicenseStatus = AvailabilityStatus.Unavailable;
+        StatusMessage = new OperationalMessage("Módulo desactivado.", MessageSeverity.Information);
+        NotifyStatusTextChanged();
+        NotifyAvailabilityChanged();
+    }
+
+    private Task PrepareForCurrentLifecycleAsync()
+    {
+        _lifecycleCancellation ??= new CancellationTokenSource();
+        var generation = Interlocked.Increment(ref _generation);
+        return PrepareAsync(generation, _lifecycleCancellation.Token);
+    }
+
+    private async Task PrepareAsync(long generation, CancellationToken cancellationToken)
+    {
+        _isReady = false;
+        IsBusy = true;
+        ClearProduct();
+        AdditionalInformation = string.Empty;
+        ConnectionStatus = AvailabilityStatus.Pending;
+        LicenseStatus = AvailabilityStatus.Pending;
+        StatusMessage = new OperationalMessage("Preparando el verificador…", MessageSeverity.Information);
+        NotifyStatusTextChanged();
+
+        try
+        {
+            var result = await _workflow.PrepareAsync(cancellationToken);
+            if (!IsCurrent(generation, cancellationToken)) return;
+            PublishPreparation(result);
+            _logger.LogInformation("Price verifier completed at {Stage} with {Status}", "Preparation", result.Status);
+        }
+        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+        {
+            return;
+        }
+        finally
+        {
+            if (generation == Volatile.Read(ref _generation))
+            {
+                IsBusy = false;
+                if (_isReady) FocusRequestVersion++;
+            }
+        }
+    }
+
+    private async Task SubmitBarcodeAsync()
+    {
+        var cancellationToken = _lifecycleCancellation?.Token ?? CancellationToken.None;
+        var generation = Volatile.Read(ref _generation);
+        if (!IsAvailable || cancellationToken.IsCancellationRequested) return;
+
+        IsBusy = true;
+        ClearProduct();
+        StatusMessage = new OperationalMessage("Consultando producto…", MessageSeverity.Information);
+        try
+        {
+            var result = await _workflow.LookupAsync(Barcode, cancellationToken);
+            if (!IsCurrent(generation, cancellationToken)) return;
+            PublishLookup(result);
+            _logger.LogInformation("Price verifier completed at {Stage} with {Status}", "Lookup", result.Status);
+        }
+        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+        {
+            return;
+        }
+        finally
+        {
+            if (generation == Volatile.Read(ref _generation))
+            {
+                IsBusy = false;
+                if (_isReady) FocusRequestVersion++;
+            }
+        }
+    }
+
+    private void PublishPreparation(PriceVerifierPreparationResult result)
+    {
+        _isReady = result.IsReady;
+        AdditionalInformation = result.IsReady ? result.AdditionalInformation : string.Empty;
+        ConnectionStatus = result.Status switch
+        {
+            PriceVerifierPreparationStatus.Ready or PriceVerifierPreparationStatus.LicenseUnavailable => AvailabilityStatus.Available,
+            _ => AvailabilityStatus.Error
+        };
+        LicenseStatus = result.Status switch
+        {
+            PriceVerifierPreparationStatus.Ready => AvailabilityStatus.Available,
+            PriceVerifierPreparationStatus.LicenseUnavailable => AvailabilityStatus.Error,
+            _ => AvailabilityStatus.Unavailable
+        };
+        StatusMessage = new OperationalMessage(result.Message, result.IsReady ? MessageSeverity.Information : MessageSeverity.Error);
+        NotifyStatusTextChanged();
+        NotifyAvailabilityChanged();
+    }
+
+    private void PublishLookup(PriceVerifierLookupResult result)
+    {
+        if (result.Status == PriceVerifierLookupStatus.Success)
+        {
+            var product = result.Product!;
+            ProductDescription = Neutralize(product.Description);
+            ProductPresentation = Neutralize(product.Presentation);
+            StockDisplay = Neutralize(product.Stock);
+            FinalPriceDisplay = Neutralize(result.FormattedPrice);
+            StatusMessage = new OperationalMessage(result.Message, MessageSeverity.Information);
+            return;
+        }
+
+        ClearProduct();
+        if (result.Status == PriceVerifierLookupStatus.OperationalFailure)
+        {
+            _isReady = false;
+            ConnectionStatus = AvailabilityStatus.Error;
+            LicenseStatus = AvailabilityStatus.Unavailable;
+            NotifyStatusTextChanged();
+            NotifyAvailabilityChanged();
+        }
+
+        StatusMessage = new OperationalMessage(
+            result.Message,
+            result.Status == PriceVerifierLookupStatus.OperationalFailure ? MessageSeverity.Error : MessageSeverity.Warning);
+    }
+
+    private bool IsCurrent(long generation, CancellationToken token) =>
+        generation == Volatile.Read(ref _generation) && !token.IsCancellationRequested;
+
+    private void ClearProduct()
+    {
+        ProductDescription = Neutral;
+        ProductPresentation = Neutral;
+        StockDisplay = Neutral;
+        FinalPriceDisplay = Neutral;
+    }
+
+    private void NotifyAvailabilityChanged()
+    {
+        OnPropertyChanged(nameof(IsAvailable));
+        OnPropertyChanged(nameof(IsBarcodeAvailable));
+        OnPropertyChanged(nameof(CanRetry));
+        RetryCommand.NotifyCanExecuteChanged();
+        SubmitBarcodeCommand.NotifyCanExecuteChanged();
+    }
+
+    private void NotifyStatusTextChanged()
+    {
+        OnPropertyChanged(nameof(ConnectionStatusText));
+        OnPropertyChanged(nameof(LicenseStatusText));
+    }
+
+    private static string Neutralize(string? value) => string.IsNullOrWhiteSpace(value) ? Neutral : value;
+    private static string AvailabilityText(AvailabilityStatus status) => status switch
+    {
+        AvailabilityStatus.Pending => "Preparando",
+        AvailabilityStatus.Available => "Disponible",
+        AvailabilityStatus.Error => "Error",
+        _ => "No disponible"
+    };
 }

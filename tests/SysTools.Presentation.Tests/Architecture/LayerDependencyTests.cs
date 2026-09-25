@@ -33,6 +33,27 @@ public sealed class LayerDependencyTests
     }
 
     [Fact]
+    public void Price_verifier_ui_has_no_infrastructure_or_future_feature_dependencies()
+    {
+        var module = Path.Combine(FindRoot(), "src", "Presentation", "Modules", "PriceVerifier");
+        var forbidden = new[]
+        {
+            "SysTools.Data", "FirebirdSql", "FbConnection", "System.IO",
+            "Cryptography", "ZXing", "FastReport", "PrintDialog",
+            "SearchByDescriptionAsync", "ILabelQueueService"
+        };
+
+        foreach (var file in EnumerateSourceAndProjectFiles(module))
+        {
+            var content = File.ReadAllText(file);
+            foreach (var value in forbidden)
+            {
+                Assert.DoesNotContain(value, content, StringComparison.OrdinalIgnoreCase);
+            }
+        }
+    }
+
+    [Fact]
     public void Entities_sources_have_no_ui_infrastructure_or_serialization_dependencies()
     {
         var entities = Path.Combine(FindRoot(), "src", "Entities");

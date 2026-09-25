@@ -1,4 +1,5 @@
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using Microsoft.Extensions.Logging;
 using SysTools.Presentation.Commands;
 using SysTools.Presentation.Modules.PriceVerifier.ViewModels;
@@ -13,8 +14,8 @@ public sealed class ShellViewModel : ViewModelBase
     public const string PriceVerifierModuleId = "price-verifier";
 
     private readonly ILogger<ShellViewModel> _logger;
+    private readonly PriceVerifierViewModel _priceVerifier;
     private UtilityModuleItem _activeModule;
-    private OperationalMessage _statusMessage;
 
     public ShellViewModel(
         PriceVerifierViewModel priceVerifier,
@@ -22,16 +23,17 @@ public sealed class ShellViewModel : ViewModelBase
         ILogger<ShellViewModel> logger)
     {
         _logger = logger;
+        _priceVerifier = priceVerifier;
         Modules = new ObservableCollection<UtilityModuleItem>(CreateInitialModules(priceVerifier));
         ValidateUniqueIds(Modules);
 
         _activeModule = Modules.Single(module => module.Id == PriceVerifierModuleId);
-        _statusMessage = new OperationalMessage("Módulo en preparación", MessageSeverity.Information);
         SelectModuleCommand = new RelayCommand(
             parameter => SelectModule(parameter as UtilityModuleItem),
             parameter => parameter is UtilityModuleItem module && module.IsEnabled);
 
         InitializeActiveModule(moduleInitializer);
+        _priceVerifier.PropertyChanged += HandlePriceVerifierPropertyChanged;
     }
 
     public string ApplicationName => "SysTools";
@@ -59,19 +61,15 @@ public sealed class ShellViewModel : ViewModelBase
     public ViewModelBase ActiveModuleContent => ActiveModule.Content
         ?? throw new InvalidOperationException("The active module must expose content.");
 
-    public AvailabilityStatus ConnectionStatus => AvailabilityStatus.Unavailable;
+    public AvailabilityStatus ConnectionStatus => _priceVerifier.ConnectionStatus;
 
-    public AvailabilityStatus LicenseStatus => AvailabilityStatus.Unavailable;
+    public AvailabilityStatus LicenseStatus => _priceVerifier.LicenseStatus;
 
-    public string ConnectionStatusText => "Conexión: No disponible";
+    public string ConnectionStatusText => _priceVerifier.ConnectionStatusText;
 
-    public string LicenseStatusText => "Licencia: No disponible";
+    public string LicenseStatusText => _priceVerifier.LicenseStatusText;
 
-    public OperationalMessage StatusMessage
-    {
-        get => _statusMessage;
-        private set => SetProperty(ref _statusMessage, value);
-    }
+    public OperationalMessage StatusMessage => _priceVerifier.StatusMessage;
 
     public RelayCommand SelectModuleCommand { get; }
 
@@ -115,14 +113,33 @@ public sealed class ShellViewModel : ViewModelBase
         }
         catch (Exception exception)
         {
-            StatusMessage = new OperationalMessage(
-                "No fue posible preparar el módulo. Puede continuar usando la shell.",
-                MessageSeverity.Error);
             _logger.LogError(
                 exception,
                 "Recoverable module failure at {Stage} for {ModuleId}",
                 "Initialization",
                 ActiveModule.Id);
+        }
+    }
+
+    private void HandlePriceVerifierPropertyChanged(object? sender, PropertyChangedEventArgs e)
+    {
+        if (e.PropertyName is nameof(PriceVerifierViewModel.ConnectionStatus)
+            or nameof(PriceVerifierViewModel.ConnectionStatusText))
+        {
+            OnPropertyChanged(nameof(ConnectionStatus));
+            OnPropertyChanged(nameof(ConnectionStatusText));
+        }
+
+        if (e.PropertyName is nameof(PriceVerifierViewModel.LicenseStatus)
+            or nameof(PriceVerifierViewModel.LicenseStatusText))
+        {
+            OnPropertyChanged(nameof(LicenseStatus));
+            OnPropertyChanged(nameof(LicenseStatusText));
+        }
+
+        if (e.PropertyName == nameof(PriceVerifierViewModel.StatusMessage))
+        {
+            OnPropertyChanged(nameof(StatusMessage));
         }
     }
 
