@@ -12,6 +12,8 @@ using SysTools.Presentation.Shell.Views;
 using SysTools.Presentation.ViewModels;
 using SysTools.Business.Labels;
 using SysTools.Presentation.Modules.Labels;
+using SysTools.Business.Support;
+using SysTools.Presentation.Modules.Support;
 
 namespace SysTools.Presentation.Tests.Composition;
 
@@ -49,6 +51,12 @@ public sealed class DependencyInjectionTests
         Assert.Same(provider.GetRequiredService<ILabelDocumentRenderer>(), provider.GetRequiredService<ILabelDocumentRenderer>());
         Assert.Same(provider.GetRequiredService<ILabelPrinter>(), provider.GetRequiredService<ILabelPrinter>());
         Assert.Same(provider.GetRequiredService<ILabelPreviewDialogService>(), provider.GetRequiredService<ILabelPreviewDialogService>());
+        Assert.Same(provider.GetRequiredService<ISupportWorkflow>(), provider.GetRequiredService<ISupportWorkflow>());
+        Assert.Same(provider.GetRequiredService<ISupportLogStore>(), provider.GetRequiredService<ISupportLogStore>());
+        Assert.Same(provider.GetRequiredService<ISupportExternalLauncher>(), provider.GetRequiredService<ISupportExternalLauncher>());
+        var support = provider.GetRequiredService<SupportViewModel>();
+        Assert.Same(support, provider.GetRequiredService<SupportViewModel>());
+        Assert.Same(support, provider.GetRequiredService<ShellViewModel>().Modules.Single(module => module.Id == "system-logs").Content);
     }
 
     [Fact]

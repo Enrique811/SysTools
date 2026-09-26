@@ -7,6 +7,7 @@ using SysTools.Presentation.Shell.Models;
 using SysTools.Presentation.Shell.Services;
 using SysTools.Presentation.ViewModels;
 using SysTools.Presentation.Modules.Configuration.Services;
+using SysTools.Presentation.Modules.Support;
 
 namespace SysTools.Presentation.Shell.ViewModels;
 
@@ -23,12 +24,13 @@ public sealed class ShellViewModel : ViewModelBase
         PriceVerifierViewModel priceVerifier,
         IModuleInitializer moduleInitializer,
         ILogger<ShellViewModel> logger,
-        IConfigurationDialogService? configurationDialog = null)
+        IConfigurationDialogService? configurationDialog = null,
+        SupportViewModel? support = null)
     {
         _logger = logger;
         _priceVerifier = priceVerifier;
         _configurationDialog = configurationDialog;
-        Modules = new ObservableCollection<UtilityModuleItem>(CreateInitialModules(priceVerifier));
+        Modules = new ObservableCollection<UtilityModuleItem>(CreateInitialModules(priceVerifier, support));
         ValidateUniqueIds(Modules);
 
         _activeModule = Modules.Single(module => module.Id == PriceVerifierModuleId);
@@ -122,7 +124,9 @@ public sealed class ShellViewModel : ViewModelBase
             item.SetSelected(ReferenceEquals(item, module));
         }
 
+        if (ActiveModuleContent is IAsyncModuleLifecycle previous) previous.Deactivate();
         ActiveModule = module;
+        if (ActiveModuleContent is IAsyncModuleLifecycle current) _ = ActivateModuleAsync(current, module.Id);
         _logger.LogInformation("Module {ModuleId} selected", module.Id);
         return true;
     }
@@ -166,7 +170,14 @@ public sealed class ShellViewModel : ViewModelBase
         }
     }
 
-    private static IReadOnlyList<UtilityModuleItem> CreateInitialModules(PriceVerifierViewModel priceVerifier) =>
+    private async Task ActivateModuleAsync(IAsyncModuleLifecycle lifecycle, string moduleId)
+    {
+        try { await lifecycle.ActivateAsync(); }
+        catch (OperationCanceledException) { }
+        catch { _logger.LogError("Recoverable module activation failure for {ModuleId}", moduleId); }
+    }
+
+    private static IReadOnlyList<UtilityModuleItem> CreateInitialModules(PriceVerifierViewModel priceVerifier, SupportViewModel? support) =>
     [
         new(PriceVerifierModuleId, "Verificador de precios", ModuleSection.Utilities, true, priceVerifier, true),
         new("label-printing", "Impresión de etiquetas", ModuleSection.Utilities, false),
@@ -174,7 +185,9 @@ public sealed class ShellViewModel : ViewModelBase
         new("new-utility", "Nueva utilería", ModuleSection.Utilities, false),
         new("settings", "Configuración", ModuleSection.Administration, false),
         new("licensing", "Licencias", ModuleSection.Administration, false),
-        new("system-logs", "Logs del sistema", ModuleSection.Administration, false)
+        support is null
+            ? new("system-logs", "Soporte y logs", ModuleSection.Administration, false)
+            : new("system-logs", "Soporte y logs", ModuleSection.Administration, true, support)
     ];
 
     private static void ValidateUniqueIds(IEnumerable<UtilityModuleItem> modules)

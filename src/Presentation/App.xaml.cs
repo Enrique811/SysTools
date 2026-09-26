@@ -28,6 +28,9 @@ using SysTools.Presentation.Modules.Configuration.Services;
 using SysTools.Presentation.Shell.Services;
 using SysTools.Presentation.Shell.ViewModels;
 using SysTools.Presentation.Shell.Views;
+using SysTools.Business.Support;
+using SysTools.Data.Support;
+using SysTools.Presentation.Modules.Support;
 
 namespace SysTools.Presentation;
 
@@ -100,6 +103,11 @@ public partial class App : Application
         services.AddSingleton<IClipboardService, WpfClipboardService>();
         services.AddSingleton<IConfirmationService, WpfConfirmationService>();
         services.AddSingleton<IConfigurationDialogService, ConfigurationDialogService>();
+        services.AddSingleton<IApplicationVersionProvider, AssemblyApplicationVersionProvider>();
+        services.AddSingleton<ISupportLogStore, ManagedSupportLogStore>();
+        services.AddSingleton<ISupportExternalLauncher, WindowsSupportExternalLauncher>();
+        services.AddSingleton<ISupportWorkflow, SupportWorkflow>();
+        services.AddSingleton<SupportViewModel>();
         services.AddTransient<ProductSearchViewModel>();
         services.AddSingleton<IProductSearchDialogService, ProductSearchDialogService>();
         services.AddSingleton<IModuleInitializer, DefaultModuleInitializer>();

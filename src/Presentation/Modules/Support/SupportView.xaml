@@ -1,0 +1,49 @@
+<UserControl x:Class="SysTools.Presentation.Modules.Support.SupportView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:automation="clr-namespace:System.Windows.Automation;assembly=PresentationCore"
+             MinWidth="760" MinHeight="520">
+  <UserControl.InputBindings>
+    <KeyBinding Key="F5" Command="{Binding RefreshLogsCommand}"/>
+  </UserControl.InputBindings>
+  <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+    <StackPanel>
+      <TextBlock Text="{Binding ModuleTitle}" FontSize="28" FontWeight="Bold"/>
+      <TextBlock Text="{Binding ModuleDescription}" Style="{DynamicResource MutedTextStyle}" Margin="0,4,0,18"/>
+      <Border Style="{DynamicResource CardBorderStyle}" Margin="0,0,0,16">
+        <StackPanel>
+          <TextBlock Text="Solicitud de licencia" Style="{DynamicResource SectionTitleStyle}"/>
+          <TextBlock Text="Identificador del equipo" Margin="0,12,0,4"/>
+          <DockPanel><TextBox Text="{Binding HardwareId}" IsReadOnly="True" Style="{DynamicResource DisabledFieldStyle}" MinWidth="430" automation:AutomationProperties.Name="Identificador del equipo"/>
+            <Button Content="Copiar UUID" Command="{Binding CopyHardwareIdCommand}" Margin="10,0,0,0" Padding="14,8"/></DockPanel>
+          <Button Content="Preparar solicitud" Command="{Binding PrepareLicenseCommand}" HorizontalAlignment="Left" Margin="0,12,0,0" Padding="14,8"/>
+        </StackPanel>
+      </Border>
+      <Border Style="{DynamicResource CardBorderStyle}" Margin="0,0,0,16">
+        <Grid><Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
+          <StackPanel Margin="0,0,18,0"><TextBlock Text="Reportar un error" Style="{DynamicResource SectionTitleStyle}"/>
+            <TextBlock Text="Resumen" Margin="0,12,0,4"/><TextBox Text="{Binding ErrorSummary, UpdateSourceTrigger=PropertyChanged}" MaxLength="120" Style="{DynamicResource CaptureFieldStyle}" automation:AutomationProperties.Name="Resumen del error"/>
+            <TextBlock Text="Detalle" Margin="0,10,0,4"/><TextBox Text="{Binding ErrorDetail, UpdateSourceTrigger=PropertyChanged}" MaxLength="4000" Height="110" AcceptsReturn="True" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" Style="{DynamicResource CaptureFieldStyle}" automation:AutomationProperties.Name="Detalle del error"/>
+            <Button Content="Preparar reporte" Command="{Binding PrepareErrorCommand}" HorizontalAlignment="Left" Margin="0,12,0,0" Padding="14,8"/>
+          </StackPanel>
+          <StackPanel Grid.Column="1"><TextBlock Text="Abrir borrador" Style="{DynamicResource SectionTitleStyle}"/>
+            <TextBlock Text="Canal" Margin="0,12,0,4"/><ComboBox ItemsSource="{Binding Channels}" SelectedItem="{Binding SelectedChannel}" MinHeight="36" automation:AutomationProperties.Name="Canal de correo"/>
+            <TextBlock Text="El correo no se envía automáticamente. Revise destinatario y contenido en el cliente." Style="{DynamicResource MutedTextStyle}" Margin="0,10,0,10"/>
+            <Button Content="Abrir borrador" Command="{Binding OpenDraftCommand}" HorizontalAlignment="Left" Padding="14,8"/>
+          </StackPanel>
+        </Grid>
+      </Border>
+      <Border Style="{DynamicResource CardBorderStyle}">
+        <StackPanel><DockPanel><TextBlock Text="Logs del sistema" Style="{DynamicResource SectionTitleStyle}"/>
+          <StackPanel DockPanel.Dock="Right" Orientation="Horizontal"><Button Content="Refrescar (F5)" Command="{Binding RefreshLogsCommand}" Padding="12,7"/><Button Content="Abrir carpeta" Command="{Binding OpenLogFolderCommand}" Margin="8,0,0,0" Padding="12,7"/></StackPanel></DockPanel>
+          <Grid Margin="0,12,0,0"><Grid.ColumnDefinitions><ColumnDefinition Width="280"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
+            <StackPanel Margin="0,0,12,0"><ListBox ItemsSource="{Binding Logs}" SelectedItem="{Binding SelectedLog}" Height="210" automation:AutomationProperties.Name="Archivos de log"><ListBox.ItemTemplate><DataTemplate><StackPanel Margin="4"><TextBlock Text="{Binding Id}" FontWeight="SemiBold"/><TextBlock Text="{Binding LastWriteUtc}" FontSize="11"/></StackPanel></DataTemplate></ListBox.ItemTemplate></ListBox><Button Content="Ver seleccionado" Command="{Binding LoadSelectedLogCommand}" Margin="0,8,0,0" Padding="12,7"/></StackPanel>
+            <TextBox Grid.Column="1" Text="{Binding LogPreview}" IsReadOnly="True" AcceptsReturn="True" TextWrapping="NoWrap" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" Height="250" FontFamily="Consolas" automation:AutomationProperties.Name="Vista previa del log"/>
+          </Grid>
+        </StackPanel>
+      </Border>
+      <TextBlock Text="{Binding StatusText}" Margin="0,14,0,8" TextWrapping="Wrap" automation:AutomationProperties.LiveSetting="Polite"/>
+    </StackPanel>
+  </ScrollViewer>
+</UserControl>
+

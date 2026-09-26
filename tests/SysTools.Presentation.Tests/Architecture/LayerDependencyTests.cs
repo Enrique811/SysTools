@@ -307,6 +307,32 @@ public sealed class LayerDependencyTests
         }
     }
 
+    [Fact]
+    public void Support_presentation_and_business_keep_process_and_filesystem_in_data()
+    {
+        var root = FindRoot();
+        var presentation = Path.Combine(root, "src", "Presentation", "Modules", "Support");
+        foreach (var file in EnumerateSourceAndProjectFiles(presentation))
+        {
+            var content = File.ReadAllText(file);
+            Assert.DoesNotContain("System.Diagnostics", content, StringComparison.Ordinal);
+            Assert.DoesNotContain("System.IO", content, StringComparison.Ordinal);
+            Assert.DoesNotContain("Process.Start", content, StringComparison.Ordinal);
+            Assert.DoesNotContain("File.", content, StringComparison.Ordinal);
+            Assert.DoesNotContain("Directory.", content, StringComparison.Ordinal);
+            Assert.DoesNotContain("SysTools.Data", content, StringComparison.Ordinal);
+        }
+        var business = Path.Combine(root, "src", "Business", "Support");
+        foreach (var file in EnumerateSourceAndProjectFiles(business))
+        {
+            var content = File.ReadAllText(file);
+            Assert.DoesNotContain("SysTools.Data", content, StringComparison.Ordinal);
+            Assert.DoesNotContain("Process.Start", content, StringComparison.Ordinal);
+            Assert.DoesNotContain("File.", content, StringComparison.Ordinal);
+            Assert.DoesNotContain("Directory.", content, StringComparison.Ordinal);
+        }
+    }
+
     private static IEnumerable<string> EnumerateSourceAndProjectFiles(string directory) =>
         Directory.EnumerateFiles(directory, "*.*", SearchOption.AllDirectories)
             .Where(path => !path.Contains(
